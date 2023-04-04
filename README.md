@@ -1,11 +1,11 @@
 # CIS550-Final-Project
 
-## Project Name:
+## Project Name: Anime Odyssy
 
-## Group Member:
+## Group Member: (name, pennkey)
    -  Yiling Zhu ()
    -  Minyi Hu ()
    -  Yida Wang ()
    -  Jinwei Bi (bijinwei)
 
-## 
+## Description:
