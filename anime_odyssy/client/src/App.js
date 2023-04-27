@@ -1,56 +1,47 @@
-import React, { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { indigo, amber } from "@mui/material/colors";
+import { createTheme } from "@mui/material/styles";
 
+// import NavBar from "./components/NavBar";
+// import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/Login";
+// import RegisterPage from "./pages/Register";
+// import AnimePage from "./pages/AnimePage";
+// import FunPage from "./pages/FunPage";
+
+// createTheme enables you to customize the look and feel of your app past the default
+// in this case, we only change the color scheme
+export const theme = createTheme({
+  palette: {
+    primary: indigo,
+    secondary: amber,
+  },
+});
+
+// App is the root component of our application and as children contain all our pages
+// We use React Router's BrowserRouter and Routes components to define the pages for
+// our application, with each Route component representing a page and the common
+// NavBar component allowing us to navigate between pages (with hyperlinks)
 function App() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const handleLogin = (event) => {
-    event.preventDefault();
-    // Your login validation logic goes here
-    if (username === "admin" && password === "password") {
-      setIsLoggedIn(true);
-    }
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUsername("");
-    setPassword("");
-  };
-
   return (
-    <div className="App">
-      {isLoggedIn ? (
-        <div>
-          <h2>Welcome, {username}!</h2>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      ) : (
-        <form onSubmit={handleLogin}>
-          <h2>Login Page</h2>
-          <label>
-            Username:
-            <input
-              type="text"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-            />
-          </label>
-          <br />
-          <label>
-            Password:
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-          </label>
-          <br />
-          <button type="submit">Login</button>
-        </form>
-      )}
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        {/* <NavBar /> */}
+        <Routes>
+          {/* <Route path="/home" element={<HomePage />} /> */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login/:username/:password" element={<LoginPage />} />
+          {/* <Route
+            path="/register/:username/:password/:gender/:age"
+            element={<RegisterPage />}
+          />
+          <Route path="/anime" element={<AnimePage />} />
+          <Route path="/fun" element={<FunPage />} /> */}
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
