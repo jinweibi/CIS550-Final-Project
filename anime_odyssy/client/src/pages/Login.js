@@ -1,57 +1,125 @@
 import React, { useState } from "react";
+import "../styles/Login.css";
+import logo from "../images/logo.png";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (event) => {
+  function handleUsernameInputChange(event) {
+    setUsername(event.target.value);
+  }
+
+  function handlePasswordInputChange(event) {
+    setPassword(event.target.value);
+  }
+
+  function handleSubmit(event) {
     event.preventDefault();
-    // Your login validation logic goes here
-    if (username === "admin" && password === "password") {
-      setIsLoggedIn(true);
+    if (username === "bijinwei") {
+      // render password container
+      setPasswordContainer(true);
+    } else {
+      alert("Username does not exist.");
     }
-  };
+  }
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUsername("");
-    setPassword("");
-  };
+  const [passwordContainer, setPasswordContainer] = useState(false);
 
-  return (
-    <div className="Login">
-      {isLoggedIn ? (
-        <div>
-          <h2>Welcome, {username}!</h2>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      ) : (
-        <form onSubmit={handleLogin}>
-          <h2>Login Page</h2>
-          <label>
-            Username:
+  function handleBackClick() {
+    setPasswordContainer(false);
+  }
+
+  function handleShowPassword() {
+    setShowPassword(!showPassword);
+  }
+
+  function handleSignIn(event) {
+    event.preventDefault();
+    // Perform authentication check
+    if (password === "password123") {
+      // Redirect to next page
+      window.location.href = "#";
+    } else {
+      alert("Incorrect password");
+    }
+  }
+
+  if (!passwordContainer) {
+    return (
+      <body className="login">
+        <div className="container">
+          <div className="logo">
+            <img src={logo} alt="Anime Odyssy" />
+            <h2>Anime Odyssy</h2>
+          </div>
+          <h1>Sign in</h1>
+          <form onSubmit={handleSubmit}>
+            <div className="username-label">Enter your username</div>
             <input
               type="text"
+              name="username"
+              id="username"
+              placeholder="Username"
+              required
               value={username}
-              onChange={(event) => setUsername(event.target.value)}
+              onChange={handleUsernameInputChange}
             />
-          </label>
-          <br />
-          <label>
-            Password:
+            <br />
+            <input type="button" value="Next &rarr;" onClick={handleSubmit} />
+          </form>
+          <p>
+            Not having an account?
+            <a href="PennCloud_login_password.html">Create account</a> to
+            explore the best Anime world!
+          </p>
+        </div>
+      </body>
+    );
+  } else {
+    return (
+      <body className="login">
+        <div className="container">
+          <div className="logo">
+            <img src={logo} alt="Anime Odyssy" />
+            <h2>Anime Odyssy</h2>
+          </div>
+          <h1>
+            Welcome back,{" "}
+            <span id="username">{decodeURIComponent(username)}</span>!
+          </h1>
+          <form onSubmit={handleSignIn}>
+            <div className="password-label">Enter your password</div>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              id="password"
+              placeholder="Password"
+              required
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={handlePasswordInputChange}
             />
-          </label>
-          <br />
-          <button type="submit">Login</button>
-        </form>
-      )}
-    </div>
-  );
+            <br />
+            <div className="checkbox">
+              <input
+                type="checkbox"
+                id="show-password"
+                onChange={handleShowPassword}
+              />
+              <label htmlFor="show-password">Show password</label>
+            </div>
+            <input
+              type="button"
+              value="&larr; Back"
+              onClick={handleBackClick}
+            />
+            <input type="button" value="Sign in" onClick={handleSignIn} />
+          </form>
+        </div>
+      </body>
+    );
+  }
 }
 
 export default Login;

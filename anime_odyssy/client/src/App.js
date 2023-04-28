@@ -1,21 +1,25 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { indigo, amber } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
 
 // import NavBar from "./components/NavBar";
 // import HomePage from "./pages/HomePage";
+// import "./App.css";
 import LoginPage from "./pages/Login";
+import NavBar from "./components/NavBar";
 // import RegisterPage from "./pages/Register";
 // import AnimePage from "./pages/AnimePage";
 // import FunPage from "./pages/FunPage";
 
-// createTheme enables you to customize the look and feel of your app past the default
-// in this case, we only change the color scheme
 export const theme = createTheme({
   palette: {
-    primary: indigo,
-    secondary: amber,
+    primary: {
+      main: "#f442d6",
+    },
+    background: {
+      default: "#f442d6",
+      paper: "#f5f5f5",
+    },
   },
 });
 
@@ -28,7 +32,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
-        {/* <NavBar /> */}
+        <NavBar />
         <Routes>
           {/* <Route path="/home" element={<HomePage />} /> */}
           <Route path="/login" element={<LoginPage />} />
