@@ -71,8 +71,8 @@ function Login() {
           </form>
           <p>
             Not having an account?
-            <a href="PennCloud_login_password.html">Create account</a> to
-            explore the best Anime world!
+            <a href="register">Create account</a> to explore the best Anime
+            world!
           </p>
         </div>
       </body>

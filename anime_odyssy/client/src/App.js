@@ -5,9 +5,9 @@ import { createTheme } from "@mui/material/styles";
 // import NavBar from "./components/NavBar";
 // import HomePage from "./pages/HomePage";
 // import "./App.css";
-import LoginPage from "./pages/Login";
+import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
-// import RegisterPage from "./pages/Register";
+// import Register from "./pages/Register";
 // import AnimePage from "./pages/AnimePage";
 // import FunPage from "./pages/FunPage";
 
@@ -35,11 +35,11 @@ function App() {
         <NavBar />
         <Routes>
           {/* <Route path="/home" element={<HomePage />} /> */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/login/:username/:password" element={<LoginPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/login/:username/:password" element={<Login />} />
           {/* <Route
             path="/register/:username/:password/:gender/:age"
-            element={<RegisterPage />}
+            element={<Register />}
           />
           <Route path="/anime" element={<AnimePage />} />
           <Route path="/fun" element={<FunPage />} /> */}
