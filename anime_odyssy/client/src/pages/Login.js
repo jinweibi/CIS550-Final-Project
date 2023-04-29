@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import "../styles/Login.css";
 import logo from "../images/logo.png";
+const config = require("../config.json");
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   function handleUsernameInputChange(event) {
     setUsername(event.target.value);
@@ -15,13 +17,24 @@ function Login() {
     setPassword(event.target.value);
   }
 
-  function handleSubmit(event) {
+  function handleNext(event) {
     event.preventDefault();
-    if (username === "bijinwei") {
-      // render password container
-      setPasswordContainer(true);
+    if (username) {
+      // Perform registration
+      console.log(`Registering user ${username}`);
+      fetch(
+        `http://${config.server_host}:${config.server_port}/login?username=${username}`
+      ).then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          // render password container
+          setPasswordContainer(true);
+        } else {
+          alert("Username does not exist.");
+        }
+      });
     } else {
-      alert("Username does not exist.");
+      alert("Please enter a username.");
     }
   }
 
@@ -35,14 +48,31 @@ function Login() {
     setShowPassword(!showPassword);
   }
 
-  function handleSignIn(event) {
+  // function sleep(ms) {
+  //   return new Promise((resolve) => setTimeout(resolve, ms));
+  // }
+
+  async function handleSignIn(event) {
     event.preventDefault();
+    // setLoading(true);
+    // await sleep(500);
     // Perform authentication check
-    if (password === "password123") {
-      // Redirect to next page
-      window.location.href = "#";
+    if (username) {
+      // Perform registration
+      console.log(`Registering user ${username}`);
+      fetch(
+        `http://${config.server_host}:${config.server_port}/login?username=${username}&password=${password}`
+      ).then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          // alert("Successful login!");
+          window.location.href = "/home";
+        } else {
+          alert("Incorrect password.");
+        }
+      });
     } else {
-      alert("Incorrect password");
+      alert("Incorrect password.");
     }
   }
 
@@ -55,7 +85,7 @@ function Login() {
             <h2>Anime Odyssy</h2>
           </div>
           <h1>Sign in</h1>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleNext}>
             <div className="username-label">Enter your username</div>
             <input
               type="text"
@@ -67,7 +97,7 @@ function Login() {
               onChange={handleUsernameInputChange}
             />
             <br />
-            <input type="button" value="Next &rarr;" onClick={handleSubmit} />
+            <input type="button" value="Next &rarr;" onClick={handleNext} />
           </form>
           <p>
             Not having an account?
@@ -90,6 +120,7 @@ function Login() {
             <span id="username">{decodeURIComponent(username)}</span>!
           </h1>
           <form onSubmit={handleSignIn}>
+            {/* {loading ? <img src={logo} alt="loading" className="rotate" /> : ""} */}
             <div className="password-label">Enter your password</div>
             <input
               type={showPassword ? "text" : "password"}

@@ -45,34 +45,55 @@ const random = async function (req, res) {
 const login = async function (req, res) {
   const username = req.query.username;
   // hash function needed (TODO)
-  const password = req.query.password;
-  connection.query(
-    `
+  const password = req.query.password ?? "";
+  if (password == "") {
+    connection.query(
+      `
     SELECT *
     FROM user
-    WHERE username = ${username}
+    WHERE username = "${username}"
   `,
-    (err, data) => {
-      if (err || data.length === 0) {
-        // user does not exist
-        // if there is an error for some reason, or if the query is empty (this should not be possible)
-        // print the error message and return an empty object instead
-        console.log(err);
-        res.status(404).send("Status: Not Found");
-      } else {
-        // user exist do authentication check
-        const get_password = data[0].paassword;
-        // authentication check
-        if (password === get_password) {
-          // response with OK and msg
-          res.status(200).send("Status: OK");
+      (err, data) => {
+        if (err || data.length === 0) {
+          // user does not exist
+          // if there is an error for some reason, or if the query is empty (this should not be possible)
+          // print the error message and return an empty object instead
+          console.log(err);
+          res.status(404).send("Status: Not Found");
         } else {
-          // response with 401 and error msg
-          res.status(401).send("Status: Unauthorized");
+          res.status(200).send("Status: OK");
         }
       }
-    }
-  );
+    );
+  } else {
+    connection.query(
+      `
+    SELECT *
+    FROM user
+    WHERE username = "${username}"
+  `,
+      (err, data) => {
+        if (err || data.length === 0) {
+          // user does not exist
+          // if there is an error for some reason, or if the query is empty (this should not be possible)
+          // print the error message and return an empty object instead
+          console.log(err);
+          res.status(404).send("Status: Not Found");
+        } else {
+          // user exist do authentication check
+          const get_password = data[0].password;
+          // authentication check
+          if (password === get_password) {
+            // response with OK and msg
+            res.status(200).send("Status: OK");
+          } else {
+            // response with 401 and error msg
+            res.status(401).send("Status: Unauthorized");
+          }
+        }
+      }
+    );
+  }
 };
 
 // Route 2: POST /register
@@ -82,21 +103,63 @@ const register = async function (req, res) {
   const password = req.query.password;
   const gender = req.query.gender;
   const age = req.query.age;
-  connection.query(
-    `
-    INSERT INTO user (username, password, gender, age) VALUES (${username}, ${password}, ${gender}, ${age})
-  `,
-    (err, data) => {
-      if (err) {
-        // password already exist or other issue (PK constraint)
-        console.log(err);
-        res.status(409).send("Status: Conflict");
-      } else {
-        console.log("1 user info inserted");
-        res.status(201).status("Status: Created");
+  if (!gender && !age) {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', NULL, NULL)`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
       }
-    }
-  );
+    );
+  } else if (!gender) {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', NULL, ${age})`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
+      }
+    );
+  } else if (!age) {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', '${gender}', NULL)`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
+      }
+    );
+  } else {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', '${gender}', ${age})`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
+      }
+    );
+  }
 };
 
 // Route 3: GET /search

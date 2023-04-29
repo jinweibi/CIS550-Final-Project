@@ -3,11 +3,11 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 
 // import NavBar from "./components/NavBar";
-// import HomePage from "./pages/HomePage";
+import HomePage from "./pages/HomePage";
 // import "./App.css";
 import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
-// import Register from "./pages/Register";
+import Register from "./pages/Register";
 // import AnimePage from "./pages/AnimePage";
 // import FunPage from "./pages/FunPage";
 
@@ -34,14 +34,11 @@ function App() {
       <BrowserRouter>
         <NavBar />
         <Routes>
-          {/* <Route path="/home" element={<HomePage />} /> */}
+          <Route path="/home" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/login/:username/:password" element={<Login />} />
-          {/* <Route
-            path="/register/:username/:password/:gender/:age"
-            element={<Register />}
-          />
-          <Route path="/anime" element={<AnimePage />} />
+          <Route path="/register" element={<Register />} />
+          {/* <Route path="/anime" element={<AnimePage />} />
           <Route path="/fun" element={<FunPage />} /> */}
         </Routes>
       </BrowserRouter>
