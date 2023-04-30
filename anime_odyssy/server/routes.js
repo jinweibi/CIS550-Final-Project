@@ -36,6 +36,7 @@ const random = async function (req, res) {
         res.json({
           data,
         });
+        console.log(data);
       }
     }
   );
@@ -367,6 +368,7 @@ const top_animes = async function (req, res) {
           console.log(err);
           res.json({});
         } else {
+          // console.log(data);
           res.json(data);
         }
       }
