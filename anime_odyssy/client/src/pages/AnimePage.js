@@ -34,7 +34,7 @@ export default function AnimePage() {
     //     </Toolbar>
     //   </AppBar>
     <Container style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-      <div style={{ marginRight: '16px', minWidth: '200px' }}>
+      <div style={{ marginRight: '16px', minWidth: '200px', width: '25%' }}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
@@ -47,14 +47,7 @@ export default function AnimePage() {
           <Tab label="Comedy" />
           <Tab label="Drama" />
         </Tabs>
-        {/* <Box mt={4}>
-          <h4>Filters:</h4>
-          <ul>
-            <li>Filter 1</li>
-            <li>Filter 2</li>
-            <li>Filter 3</li>
-          </ul>
-        </Box> */}
+
         <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">Score</InputLabel>
         {/* {all_animes.map((anime) => */}
@@ -73,7 +66,7 @@ export default function AnimePage() {
         {/* )} */}
         </FormControl>
       </div>
-    <Container style={flexFormat}>
+      <Container style={{ width: '75%' }}>
       {all_animes.map((anime) =>
         <Box
           key={anime.title}
