@@ -38,7 +38,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/login/:username/:password" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/anime" element={<AnimePage />} />
+          <Route path="/all_animes" element={<AnimePage />} />
           {/* <Route path="/fun" element={<FunPage />} /> */}
         </Routes>
       </BrowserRouter>

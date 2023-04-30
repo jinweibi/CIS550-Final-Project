@@ -22,6 +22,7 @@ app.get("/search", routes.search);
 app.get("/character/:character_id", routes.get_character_id);
 app.get("/anime/:source/:title", routes.get_manga_anime_info);
 app.get("/favorite/:username", routes.get_favorite);
+app.get("/home/all_animes", routes.all_animes);
 
 app.listen(config.server_port, () => {
   console.log(
