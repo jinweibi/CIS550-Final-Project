@@ -288,7 +288,7 @@ const recent_10_animes = async function (req, res) {
 // Route 5: GET /top_10_anime/:type
 const top_animes = async function (req, res) {
   const type = req.query.type ?? "anime";
-
+  // delete limit 10; 
   if (type === "anime") {
     // get anime
     connection.query(
@@ -297,7 +297,7 @@ const top_animes = async function (req, res) {
     from anime3 
     where total_duration is not null
     order by score, favorites desc
-    limit 10; 
+    limit 10
   `,
       (err, data) => {
         if (err || data.length === 0) {
@@ -316,7 +316,7 @@ const top_animes = async function (req, res) {
     from anime3 
     where total_duration is null
     order by score, favorites desc
-    limit 10; 
+    limit 10
     
   `,
       (err, data) => {
@@ -470,6 +470,53 @@ const get_favorite = async function (req, res) {
   );
 };
 
+// Route 11: GET /all_animes/:type
+const all_animes = async function (req, res) {
+  const type = req.query.type ?? "anime";
+  // delete limit 10; 
+  if (type === "anime") {
+    // get anime
+    connection.query(
+      `
+    select * 
+    from anime3 
+    where total_duration is not null
+    order by score, favorites desc
+    limit 100
+  `,
+      (err, data) => {
+        if (err || data.length === 0) {
+          console.log(err);
+          res.json({});
+        } else {
+          res.json(data);
+        }
+      }
+    );
+  } else {
+    // get manga
+    connection.query(
+      `
+    select * 
+    from anime3 
+    where total_duration is null
+    order by score, favorites desc
+    limit 100
+    
+  `,
+      (err, data) => {
+        if (err || data.length === 0) {
+          console.log(err);
+          res.json({});
+        } else {
+          res.json(data);
+        }
+      }
+    );
+  }
+};
+
+
 module.exports = {
   login,
   register,
@@ -481,4 +528,5 @@ module.exports = {
   get_manga_anime_info,
   get_character_id,
   get_favorite,
+  all_animes,
 };
