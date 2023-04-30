@@ -8,7 +8,7 @@ import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
 import Register from "./pages/Register";
-// import AnimePage from "./pages/AnimePage";
+import AnimePage from "./pages/AnimePage";
 // import FunPage from "./pages/FunPage";
 
 export const theme = createTheme({
@@ -38,8 +38,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/login/:username/:password" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          {/* <Route path="/anime" element={<AnimePage />} />
-          <Route path="/fun" element={<FunPage />} /> */}
+          <Route path="/anime" element={<AnimePage />} />
+          {/* <Route path="/fun" element={<FunPage />} /> */}
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
