@@ -8,6 +8,8 @@ import { createTheme } from "@mui/material/styles";
 import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
 import AnimePage from "./pages/AnimePage";
+import AnimeGenre from "./pages/AnimeGenre";
+import AnimeInfoPage from "./pages/AnimeInfoPage";
 // import Register from "./pages/Register";
 // import AnimePage from "./pages/AnimePage";
 // import FunPage from "./pages/FunPage";
@@ -38,7 +40,9 @@ function App() {
           {/* <Route path="/home" element={<HomePage />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/login/:username/:password" element={<Login />} />
-          <Route path="/all_animes" element={<AnimePage />} />
+          <Route path="/home/all_animes" element={<AnimePage />} />
+          <Route path="/home/all_animes/:animes_genre" element={<AnimeGenre />} />
+          <Route path="/home/anime/:get_anime_card" element={<AnimeInfoPage />} />
           {/* <Route
             path="/register/:username/:password/:gender/:age"
             element={<Register />}

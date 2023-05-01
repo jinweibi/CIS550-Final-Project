@@ -474,15 +474,16 @@ const get_favorite = async function (req, res) {
 const all_animes = async function (req, res) {
   const type = req.query.type ?? "anime";
   // delete limit 10; 
-  if (type === "anime") {
+  
+  // if (type === "anime") {
     // get anime
     connection.query(
       `
-    select * 
-    from anime3 
-    where total_duration is not null
-    order by score, favorites desc
-    limit 100
+      select *
+      from anime3
+      where total_duration is not null
+      order by score desc
+      limit 100;
   `,
       (err, data) => {
         if (err || data.length === 0) {
@@ -493,16 +494,28 @@ const all_animes = async function (req, res) {
         }
       }
     );
-  } else {
-    // get manga
+  // } 
+};
+
+// Route 12: GET /animes_year/:type
+// genres like '%${genres}%'
+// where total_duration is not null and anime3.genres LIKE CONCAT ('%\'', '${genre}' , '\'%')
+// select * 
+//     from anime3 
+    
+//     where (total_duration is not null) and (anime3.genres LIKE CONCAT ('%\'', '${genre}' , '\'%'))
+//     order by score, favorites desc
+//     limit 100
+const animes_year = async function (req, res) {
+  const year = req.params.year;
+  
     connection.query(
       `
-    select * 
-    from anime3 
-    where total_duration is null
-    order by score, favorites desc
-    limit 100
-    
+      select *
+from anime3
+where ( anime3.start_date LIKE '%${year}%')
+order by score desc
+limit 100;
   `,
       (err, data) => {
         if (err || data.length === 0) {
@@ -513,8 +526,63 @@ const all_animes = async function (req, res) {
         }
       }
     );
-  }
+
 };
+
+
+// Route 13: GET /all_animes/:animes_genre
+const animes_genre = async function (req, res) {
+  // const type = req.query.type ?? "anime";
+  const genres = req.params.animes_genre;
+  // delete limit 10; 
+  
+  // if (type === "anime") {
+    // get anime
+    connection.query(
+      `
+      select *
+      from anime3
+      where (anime3.total_duration is not null) and (anime3.genres like '%${genres}%')
+      order by score desc
+      limit 300;
+  `,
+      (err, data) => {
+        if (err || data.length === 0) {
+          console.log(err);
+          res.json({});
+        } else {
+          res.json(data);
+        }
+      }
+    );
+  // } 
+};
+
+// Route 14: GET /anime/get_anime_card
+const get_anime_card = async function (req, res) {
+ 
+  const title = req.params.get_anime_card;
+
+  connection.query(
+    `
+    select *
+      from anime3
+      where (anime3.total_duration is not null) and (anime3.title like '${title}')
+      order by score desc
+      limit 300;
+ 
+  `,
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json({data});
+      }
+    }
+  );
+};
+
 
 
 module.exports = {
@@ -529,4 +597,7 @@ module.exports = {
   get_character_id,
   get_favorite,
   all_animes,
+  animes_year,
+  animes_genre,
+  get_anime_card,
 };

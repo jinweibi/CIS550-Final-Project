@@ -1,12 +1,18 @@
-import React,{ useEffect, useState } from 'react';
-import { Box, Container ,AppBar, Toolbar, Typography, Tabs, Tab,Select, FormControl,
-     InputLabel, MenuItem} from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Box, Container ,AppBar, Toolbar, Typography, Tabs, Tab,Select, FormControl, InputLabel, MenuItem, IconButton} from '@mui/material';
 import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+// import {MenuIcon} from '@material-ui/icons/Menu';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import Icon from '@mui/material/Icon';
+import { green } from '@mui/material/colors';
+import AnimeCard from '../components/AnimeCard';
 
 const config = require('../config.json');
 
 export default function AnimePage() {
   const [all_animes, setAnimes] = useState([]);
+  const [selectedAnimeId, setSelectedAnimeId] = useState(null);
 
   useEffect(() => {
     fetch(`http://${config.server_host}:${config.server_port}/home/all_animes`)
@@ -14,6 +20,8 @@ export default function AnimePage() {
       .then(resJson => setAnimes(resJson));
   }, []);
 
+  console.log(all_animes);
+  console.log(all_animes.length);
   // flexFormat provides the formatting options for a "flexbox" layout that enables the album cards to
   // be displayed side-by-side and wrap to the next line when the screen is too narrow. Flexboxes are
   // incredibly powerful. You can learn more on MDN web docs linked below (or many other online resources)
@@ -21,78 +29,113 @@ export default function AnimePage() {
   const flexFormat = { display: 'flex', flexDirection: 'row-reverse', flexWrap: 'wrap', justifyContent: 'space-evenly' ,alignItems: 'center'
  };
 
- const [ratingFilter, setRatingFilter] = useState({ min: 0, max: 10 });
- const filtered_animes = all_animes.filter((anime) => {
-    if (
-      anime.score < ratingFilter.min ||
-      anime.score > ratingFilter.max
-    ) {
-      return false;
-    }
-    // if (favoriteFilter && anime.isFavorite !== favoriteFilter) {
-    //   return false;
-    // }
-    // if (genreFilter && !anime.genre.includes(genreFilter)) {
-    //   return false;
-    // }
-    return true;
-  });
-  
-  const ScoreSelect = () => {
-    const handleSelectChange = (event) => {
-      const selectedValue = event.target.value;
-      if (selectedValue === 'all') {
-        setRatingFilter({ min: 0, max: 10 });
-      } else if (selectedValue === '1-2') {
-        setRatingFilter({ min: 1, max: 2 });
-      } else if (selectedValue === '2-3') {
-        setRatingFilter({ min: 2, max: 3 });
-      } else if (selectedValue === '3-4') {
-        setRatingFilter({ min: 3, max: 4 });
-      }
-      // Add more conditions for other score ranges
-    };
-  
-    return (
-      <div>
-        <label htmlFor="score-select">Score Range:</label>
-        <select id="score-select" onChange={handleSelectChange}>
-          <option value="all">All</option>
-          <option value="1-2">1.0-2.0</option>
-          <option value="2-3">2.0-3.0</option>
-          <option value="3-4">3.0-4.0</option>
-          // Add more options for other score ranges
-        </select>
-      </div>
-    );
-  };
-
  const [value, setValue] = useState(0);
 
  const handleChange = (event, newValue) => {
    setValue(newValue);
  };
 
+ const [menuOpen, setMenuOpen] = useState(false);
+
+ const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+  
+
+
+  
+
+
   return (
-    // <div>
-    // <AppBar position="static">
-    //     <Toolbar>
-    //       <Typography variant="h6">Top Anime Titles</Typography>
-    //     </Toolbar>
-    //   </AppBar>
+    
     <Container style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-      <div style={{ marginRight: '16px', minWidth: '200px' }}>
-        <Tabs
+        <Container style={flexFormat}>
+  {selectedAnimeId && <AnimeCard title={selectedAnimeId.title} duration={selectedAnimeId.total_duration} favorites={selectedAnimeId.favorites} score={selectedAnimeId.score} handleClose={() => setSelectedAnimeId(null)} />}
+  {all_animes.map((anime) =>
+    <Box
+      key={anime.title}
+      p={3}
+      m={2}
+      style={{ background: 'white', borderRadius: '20px', border: '2px solid #000' }}
+    >
+      
+      <img
+        src={anime.URL}
+        alt = {"logo"}
+        style={{ width: "200px", height: "250px" }}
+      />
+     
+     <h4> <Link onClick={() => setSelectedAnimeId(anime)}>
+                {anime.title}
+              </Link></h4>
+      {/* <p>Duration: {anime.total_duration}</p>
+      <p>Favorites: {anime.favorites}</p>
+      <p>Score: {anime.score}</p> */}
+    </Box>
+  )}
+</Container>
+
+
+
+
+        {/* <Container style={flexFormat}>
+        {selectedAnimeId && <AnimeCard animeTitle={selectedAnimeId} handleClose={() => setSelectedAnimeId(null)} />}
+      {all_animes.map((anime) =>
+        <Box
+          key={anime.title}
+          p={3}
+          m={2}
+          style={{ background: 'white', borderRadius: '20px', border: '2px solid #000' }}
+        >
+          
+          <img
+            src={anime.URL}
+            alt = {"logo"}
+            style={{ width: "200px", height: "250px" }}
+          />
+         
+         <h4> <Link onClick={() => setSelectedAnimeId(anime.title)}>
+                    {anime.title}
+                  </Link></h4>
+        </Box>
+      )}
+    </Container> */}
+    <div style={{ float: 'right' }}>
+      <div onClick = {toggleMenu} style={{ marginRight: '16px', minWidth: '200px' }}>
+      <Box
+      sx={{
+        '& > :not(style)': {
+          m: 2,
+        },
+      }}
+    >
+      {/* <FormatListBulletedIcon>add_circle</FormatListBulletedIcon>
+      <FormatListBulletedIcon color="primary">add_circle</FormatListBulletedIcon>
+      <FormatListBulletedIcon sx={{ color: green[500] }}>add_circle</FormatListBulletedIcon>
+      <FormatListBulletedIcon fontSize="small">add_circle</FormatListBulletedIcon> */}
+      <FormatListBulletedIcon sx={{ fontSize: 80, color: "secondary" }}>Filter</FormatListBulletedIcon>
+      </Box>
+      </div>
+      </div>
+      {menuOpen && (
+        <div>
+            <Tabs
           orientation="vertical"
           variant="scrollable"
           value={value}
           onChange={handleChange}
           style={{ borderLeft: '1px solid #ddd', backgroundColor: '#E7F0FA' }}
         >
-          <Tab label="All" />
-          <Tab label="Action" />
-          <Tab label="Comedy" />
-          <Tab label="Drama" />
+          <Tab label="Action" component = {Link} to = "/home/all_animes/ACTION"/>
+
+          <Tab label="Adeventure" component = {Link} to = "/home/all_animes/Adventure"/>
+          <Tab label="Award Winning" component = {Link} to = "/home/all_animes/Award Winning"/>
+          <Tab label="Drama" component = {Link} to = "/home/all_animes/Drama"/>
+          <Tab label="Fantasy" component = {Link} to = "/home/all_animes/Fantasy"/>
+          <Tab label="Horror" component = {Link} to = "/home/all_animes/Horror"/>
+          <Tab label="Supernatural" component = {Link} to = "/home/all_animes/Supernatural"/>
+          <Tab label="Comedy" component = {Link} to = "/home/all_animes/Comedy"/>
+          <Tab label="Sci-Fi" component = {Link} to = "/home/all_animes/Sci-Fi"/>
         </Tabs>
         {/* <Box mt={4}>
           <h4>Filters:</h4>
@@ -113,14 +156,14 @@ export default function AnimePage() {
             onChange={handleChange}
             style={{ borderLeft: '1px solid #ddd', backgroundColor: '#E7F0FA' }}
         >
-            <MenuItem value={1}>One</MenuItem>
+            <MenuItem value={1} component = {Link} to = "/home/login">One</MenuItem>
             <MenuItem value={2}>Two</MenuItem>
             <MenuItem value={3}>Three</MenuItem>
         </Select>
         {/* )} */}
         </FormControl>
-      </div>
-    <Container style={flexFormat}>
+      
+    {/* <Container style={flexFormat}>
       {all_animes.map((anime) =>
         <Box
           key={anime.title}
@@ -128,8 +171,7 @@ export default function AnimePage() {
           m={2}
           style={{ background: 'white', borderRadius: '20px', border: '2px solid #000' }}
         >
-          {anime.score >= filtered_animes[0] && anime.score <= filtered_animes[1] && (
-            <React.Fragment>
+          
           <img
             src={anime.URL}
             // alt={`${anime.source} anime art`}
@@ -141,12 +183,17 @@ export default function AnimePage() {
           />
          
           <h4><NavLink to={`${anime.URL}`}>{anime.title}</NavLink></h4>
-          </React.Fragment>
-          )}
         </Box>
       )}
+    </Container> */}
+    </div>
+    // </Container>
+        // </div>
+      )}
+        
     </Container>
-    </Container>
-    // </div>
   );
 }
+
+
+
