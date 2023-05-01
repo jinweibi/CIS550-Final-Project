@@ -579,6 +579,49 @@ const all_animes = async function (req, res) {
   }
 };
 
+// Route 11: GET /all_mangas/:type
+const all_mangas = async function (req, res) {
+  const type = req.query.type ?? "manga";
+  let genre = req.query.genre ?? ""; 
+  let query = "";
+  const lowscore = req.query.mangas_low ?? 0;
+  const highscore = req.query.mangas_high ?? 1100000000;
+
+
+
+
+  if (type === "manga") {
+    // get anime
+    query = `
+      select * 
+      from anime3 
+      where total_duration is null
+        and ${lowscore} <= score and score<= ${highscore}
+    `;
+  } else {
+    // get manga
+    query = `
+      select * 
+      from anime3 
+      where total_duration is not null
+        and ${lowscore} <= score and score<= ${highscore}
+    `;
+  }
+  
+  if (genre) {
+    query += ` and genres like '%${genre}%'`; 
+  }
+  query += " order by score, favorites desc limit 100";
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
+};
+
 module.exports = {
   login,
   register,
@@ -591,4 +634,5 @@ module.exports = {
   get_character_id,
   get_favorite,
   all_animes,
+  all_mangas,
 };

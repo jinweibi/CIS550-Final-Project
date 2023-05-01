@@ -23,7 +23,7 @@ app.get("/character/:character_id", routes.get_character_id);
 app.get("/anime/:source/:title", routes.get_manga_anime_info);
 app.get("/favorite/:username", routes.get_favorite);
 app.get("/all_animes", routes.all_animes);
-app.get("all_mangas", routes.all_animes);
+app.get("/all_mangas", routes.all_mangas);
 
 app.listen(config.server_port, () => {
   console.log(
