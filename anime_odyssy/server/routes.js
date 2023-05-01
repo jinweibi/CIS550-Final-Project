@@ -536,47 +536,40 @@ const get_favorite = async function (req, res) {
 // Route 11: GET /all_animes/:type
 const all_animes = async function (req, res) {
   const type = req.query.type ?? "anime";
-  // delete limit 10; 
+  let genre = req.query.genre ?? ""; 
+  let query = "";
+  const lowscore = req.query.mangas_low ?? 0;
+  const highscore = req.query.mangas_high ?? 10;
   if (type === "anime") {
     // get anime
-    connection.query(
-      `
-    select * 
-    from anime3 
-    where total_duration is not null
-    order by score, favorites desc
-    limit 100
-  `,
-      (err, data) => {
-        if (err || data.length === 0) {
-          console.log(err);
-          res.json({});
-        } else {
-          res.json(data);
-        }
-      }
-    );
+    query = `
+      select * 
+      from anime3 
+      where total_duration is not null
+        and ${lowscore} <= score and score<= ${highscore}
+    `;
   } else {
     // get manga
-    connection.query(
-      `
-    select * 
-    from anime3 
-    where total_duration is null
-    order by score, favorites desc
-    limit 100
-    
-  `,
-      (err, data) => {
-        if (err || data.length === 0) {
-          console.log(err);
-          res.json({});
-        } else {
-          res.json(data);
-        }
-      }
-    );
+    query = `
+      select * 
+      from anime3 
+      where total_duration is null
+        and ${lowscore} <= score and score<= ${highscore}
+    `;
   }
+  
+  if (genre) {
+    query += ` and genres like '%${genre}%'`; 
+  }
+  query += " order by score, favorites desc limit 100";
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
 };
 
 // Route 11: GET /all_mangas/:type

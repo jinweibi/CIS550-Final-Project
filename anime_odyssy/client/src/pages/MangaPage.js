@@ -6,8 +6,8 @@ import { DataGrid } from '@mui/x-data-grid';
 
 const config = require('../config.json');
 
-export default function AnimePage() {
-  const [all_animes, setAnimes] = useState([]);
+export default function MangaPage() {
+  const [all_mangas, setMangas] = useState([]);
   const [filteredAnimes, setFilteredAnimes] = useState([]);
   const [value, setValue] = useState(0);
   const [genreFilter, setGenreFilter] = useState("");
@@ -17,28 +17,28 @@ export default function AnimePage() {
   useEffect(() => {
     fetch(`http://${config.server_host}:${config.server_port}/all_mangas`)
       .then((res) => res.json())
-      .then((resJson) => setAnimes(resJson));
+      .then((resJson) => setMangas(resJson));
   }, []);
 
   useEffect(() => {
     if (genreFilter === "") {
-      setFilteredAnimes(all_animes);
+      setFilteredAnimes(all_mangas);
     } else {
       setFilteredAnimes(
-        all_animes.filter((manga) => manga.genres.includes(genreFilter))
+        all_mangas.filter((manga) => manga.genres.includes(genreFilter))
       );
     }
-  }, [genreFilter, all_animes]);
+  }, [genreFilter, all_mangas]);
 
   useEffect(() => {
     if (genreFilter === "") {
-      setFilteredAnimes(all_animes);
+      setFilteredAnimes(all_mangas);
     } else {
       setFilteredAnimes(
-        all_animes.filter((manga) => manga.genres.includes(genreFilter))
+        all_mangas.filter((manga) => manga.genres.includes(genreFilter))
       );
     }
-  }, [genreFilter, all_animes]);
+  }, [genreFilter, all_mangas]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -63,7 +63,7 @@ export default function AnimePage() {
   const handleScoreChange = (event) => {
     const selectedScore = event.target.value;
     setScoreFilter(selectedScore);
-    const filteredByGenre = all_animes.filter((manga) => manga.genres.includes(genreFilter));
+    const filteredByGenre = all_mangas.filter((manga) => manga.genres.includes(genreFilter));
     switch (selectedScore) {
       case "1":
         setFilteredAnimes(
