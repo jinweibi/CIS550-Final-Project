@@ -585,7 +585,7 @@ const all_mangas = async function (req, res) {
   let genre = req.query.genre ?? ""; 
   let query = "";
   const lowscore = req.query.mangas_low ?? 0;
-  const highscore = req.query.mangas_high ?? 1100000000;
+  const highscore = req.query.mangas_high ?? 10;
 
 
 
