@@ -11,12 +11,24 @@ export default function AnimePage() {
   const [filteredAnimes, setFilteredAnimes] = useState([]);
   const [value, setValue] = useState(0);
   const [genreFilter, setGenreFilter] = useState("");
+  const [scoreFilter, setScoreFilter] = useState("");
+  const [genreScoreFilter, setGenreScoreFilter] = useState([]);
 
   useEffect(() => {
     fetch(`http://${config.server_host}:${config.server_port}/all_mangas`)
       .then((res) => res.json())
       .then((resJson) => setAnimes(resJson));
   }, []);
+
+  useEffect(() => {
+    if (genreFilter === "") {
+      setFilteredAnimes(all_animes);
+    } else {
+      setFilteredAnimes(
+        all_animes.filter((manga) => manga.genres.includes(genreFilter))
+      );
+    }
+  }, [genreFilter, all_animes]);
 
   useEffect(() => {
     if (genreFilter === "") {
@@ -44,6 +56,63 @@ export default function AnimePage() {
         setGenreFilter("Drama");
         break;
       default:
+        break;
+    }
+  };
+
+  const handleScoreChange = (event) => {
+    const selectedScore = event.target.value;
+    setScoreFilter(selectedScore);
+    const filteredByGenre = all_animes.filter((manga) => manga.genres.includes(genreFilter));
+    switch (selectedScore) {
+      case "1":
+        setFilteredAnimes(
+          filteredByGenre.filter((manga) => manga.score >= 0 && manga.score < 1)
+        );
+        break;
+      case "2":
+        setFilteredAnimes(
+          filteredByGenre.filter((manga) => manga.score >= 2 && manga.score < 3)
+        );
+        break;
+      case "3":
+        setFilteredAnimes(
+          filteredByGenre.filter((manga) => manga.score >= 2 && manga.score < 3)
+            .filter((manga) => manga.genres.includes(genreFilter))
+        );
+        break;
+      case "4":
+        setFilteredAnimes(
+          filteredByGenre.filter((manga) => manga.score >= 3 && manga.score < 4)
+            .filter((manga) => manga.genres.includes(genreFilter))
+        );
+        break;
+      case "5":
+        setFilteredAnimes(
+          filteredByGenre.filter((manga) => manga.score >= 4 && manga.score < 5)
+            .filter((manga) => manga.genres.includes(genreFilter))
+        );
+        break;
+      case "6":
+        setFilteredAnimes(
+          filteredByGenre.filter((manga) => manga.score >= 5 && manga.score < 6)
+            .filter((manga) => manga.genres.includes(genreFilter))
+        );
+        break;
+      case "7":
+        setFilteredAnimes(
+          filteredByGenre.filter((manga) => manga.score >= 6 && manga.score < 7)
+            .filter((manga) => manga.genres.includes(genreFilter))
+        );
+        break;
+      case "8":
+        setFilteredAnimes(
+          filteredByGenre.filter((manga) => manga.score >= 7 && manga.score <= 8)
+            .filter((manga) => manga.genres.includes(genreFilter))
+        );
+        break;
+      default:
+        setFilteredAnimes(filteredByGenre);
         break;
     }
   };
@@ -112,18 +181,24 @@ export default function AnimePage() {
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={all_animes.score}
+            value={scoreFilter}
             label="Score"
-            onChange={handleChange}
-            style={{ borderLeft: "1px solid #ddd", backgroundColor: "#483D8B", marginRight: "80px" , }}
+            onChange={handleScoreChange}
+            style={{
+              borderLeft: "1px solid #ddd",
+              backgroundColor: "#483D8B",
+              marginRight: "80px",
+            }}
           >
-            <MenuItem value={1}>1</MenuItem>
-            <MenuItem value={2}>2</MenuItem>
-            <MenuItem value={3}>3</MenuItem>
-            <MenuItem value={3}>4</MenuItem>
-            <MenuItem value={3}>5</MenuItem>
-            <MenuItem value={3}>6</MenuItem>
-            <MenuItem value={3}>7</MenuItem>
+            <MenuItem value="">All</MenuItem>
+            <MenuItem value="1">0-1</MenuItem>
+            <MenuItem value="2">1-2</MenuItem>
+            <MenuItem value="3">2-3</MenuItem>
+            <MenuItem value="4">3-4</MenuItem>
+            <MenuItem value="5">4-5</MenuItem>
+            <MenuItem value="6">5-6</MenuItem>
+            <MenuItem value="7">6-7</MenuItem>
+            <MenuItem value="8">7-8</MenuItem>
           </Select>
         </FormControl>
       </div >
