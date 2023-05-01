@@ -8,7 +8,7 @@ export default function AnimePage() {
   const [all_animes, setAnimes] = useState([]);
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/home/all_animes`)
+    fetch(`http://${config.server_host}:${config.server_port}/all_animes`)
       .then(res => res.json())
       .then(resJson => setAnimes(resJson));
   }, []);
@@ -34,7 +34,7 @@ export default function AnimePage() {
     //     </Toolbar>
     //   </AppBar>
     <Container style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-      <div style={{ marginRight: '16px', minWidth: '200px', width: '25%' }}>
+      <div style={{ marginRight: '16px', minWidth: '200px' }}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
@@ -47,7 +47,14 @@ export default function AnimePage() {
           <Tab label="Comedy" />
           <Tab label="Drama" />
         </Tabs>
-
+        {/* <Box mt={4}>
+          <h4>Filters:</h4>
+          <ul>
+            <li>Filter 1</li>
+            <li>Filter 2</li>
+            <li>Filter 3</li>
+          </ul>
+        </Box> */}
         <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">Score</InputLabel>
         {/* {all_animes.map((anime) => */}
@@ -66,7 +73,7 @@ export default function AnimePage() {
         {/* )} */}
         </FormControl>
       </div>
-      <Container style={{ width: '75%' }}>
+    <Container style={flexFormat}>
       {all_animes.map((anime) =>
         <Box
           key={anime.title}

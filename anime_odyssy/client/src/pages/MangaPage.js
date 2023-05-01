@@ -8,7 +8,7 @@ export default function AnimePage() {
   const [all_animes, setAnimes] = useState([]);
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/home/all_mangas`)
+    fetch(`http://${config.server_host}:${config.server_port}/all_animes?type=manga`)
       .then(res => res.json())
       .then(resJson => setAnimes(resJson));
   }, []);
@@ -26,77 +26,56 @@ export default function AnimePage() {
    setValue(newValue);
  };
 
+
   return (
-    // <div>
-    // <AppBar position="static">
-    //     <Toolbar>
-    //       <Typography variant="h6">Top Anime Titles</Typography>
-    //     </Toolbar>
-    //   </AppBar>
-    <Container style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-      <div style={{ marginRight: '16px', minWidth: '200px' }}>
+    <Container maxWidth="xl" style={{ display: 'flex', justifyContent: 'flex-start', marginLeft: 0 }}>
+      <Container style={{ flex: '4', display: 'flex', flexWrap: 'wrap', marginLeft: '15px' }}>
+        {all_animes.map((manga) =>
+          <Box
+            key={manga.title}
+            p={3}
+            m={2}
+            style={{ background: 'white', borderRadius: '20px', border: '2px solid #000', width: '250px' }}
+          >
+            <img
+              src={manga.URL}
+              alt="logo"
+              style={{ width: '100%', height: 'auto' }}
+            />
+            <h4><NavLink to={`${manga.URL}`}>{manga.title}</NavLink></h4>
+          </Box>
+        )}
+      </Container>
+      <div style={{ flex: '1', minWidth: '200px', justifyContent: 'flex-end', marginLeft: 'auto'}}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
           value={value}
           onChange={handleChange}
-          style={{ borderLeft: '1px solid #ddd', backgroundColor: '#E7F0FA' }}
+          style={{ borderLeft: '1px solid #ddd', backgroundColor: '#E7F0FA', justifyContent: 'flex-end', marginLeft: 'auto'}}
         >
           <Tab label="All" />
           <Tab label="Action" />
           <Tab label="Comedy" />
           <Tab label="Drama" />
         </Tabs>
-        {/* <Box mt={4}>
-          <h4>Filters:</h4>
-          <ul>
-            <li>Filter 1</li>
-            <li>Filter 2</li>
-            <li>Filter 3</li>
-          </ul>
-        </Box> */}
         <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Score</InputLabel>
-        {/* {all_animes.map((anime) => */}
-        <Select
+          <InputLabel id="demo-simple-select-label">Score</InputLabel>
+          <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={all_animes.score}
             label="Score"
             onChange={handleChange}
             style={{ borderLeft: '1px solid #ddd', backgroundColor: '#E7F0FA' }}
-        >
+          >
             <MenuItem value={1}>One</MenuItem>
             <MenuItem value={2}>Two</MenuItem>
             <MenuItem value={3}>Three</MenuItem>
-        </Select>
-        {/* )} */}
+          </Select>
         </FormControl>
       </div>
-    <Container style={flexFormat}>
-      {all_animes.map((anime) =>
-        <Box
-          key={anime.title}
-          p={3}
-          m={2}
-          style={{ background: 'white', borderRadius: '20px', border: '2px solid #000' }}
-        >
-          
-          <img
-            src={anime.URL}
-            // alt={`${anime.source} anime art`}
-            alt = {"logo"}
-            // style={{float: 'left'}}
-            // style={{ maxWidth: "100%", maxHeight: "100%", display: "block" }}
-            // style={{ width: "auto", height: "auto" }}
-            style={{ width: "200px", height: "250px" }}
-          />
-         
-          <h4><NavLink to={`${anime.URL}`}>{anime.title}</NavLink></h4>
-        </Box>
-      )}
     </Container>
-    </Container>
-    // </div>
   );
+  
 }

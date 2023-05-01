@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
 import Register from "./pages/Register";
 import AnimePage from "./pages/AnimePage";
+import MangaPage from  "./pages/MangaPage";
 // import FunPage from "./pages/FunPage";
 
 export const theme = createTheme({
@@ -39,6 +40,7 @@ function App() {
           <Route path="/login/:username/:password" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/all_animes" element={<AnimePage />} />
+          <Route path="/all_mangas" element={<MangaPage />} />
           {/* <Route path="/fun" element={<FunPage />} /> */}
         </Routes>
       </BrowserRouter>
