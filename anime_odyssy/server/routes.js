@@ -561,7 +561,7 @@ const all_animes = async function (req, res) {
   if (genre) {
     query += ` and genres like '%${genre}%'`; 
   }
-  query += " order by score, favorites desc limit 100";
+  query += " order by score, favorites desc limit 300";
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
@@ -604,7 +604,7 @@ const all_mangas = async function (req, res) {
   if (genre) {
     query += ` and genres like '%${genre}%'`; 
   }
-  query += " order by score, favorites desc limit 100";
+  query += " order by score, favorites desc limit 300";
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);

@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Box, Container ,AppBar, Toolbar, Typography, Tabs, Tab,Select, FormControl, InputLabel, MenuItem} from '@mui/material';
 import { NavLink } from 'react-router-dom';
-// import { Button, Checkbox, Container, FormControlLabel, Grid, Link, Slider, TextField } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
 
 const config = require('../config.json');
 
@@ -50,10 +48,25 @@ export default function AnimePage() {
         setGenreFilter("Action");
         break;
       case 2:
-        setGenreFilter("Comedy");
+        setGenreFilter("Adventure");
         break;
       case 3:
         setGenreFilter("Drama");
+        break;
+      case 4:
+        setGenreFilter("Fantasy");
+        break;
+      case 5:
+        setGenreFilter("Horror");
+        break;
+      case 6:
+        setGenreFilter("Supernatural");
+        break;
+      case 7:
+        setGenreFilter("Comedy");
+        break;
+      case 8:
+        setGenreFilter("Sci-Fi");
         break;
       default:
         break;
@@ -72,13 +85,12 @@ export default function AnimePage() {
         break;
       case "2":
         setFilteredAnimes(
-          filteredByGenre.filter((manga) => manga.score >= 2 && manga.score < 3)
+          filteredByGenre.filter((manga) => manga.score >= 1 && manga.score < 2)
         );
         break;
       case "3":
         setFilteredAnimes(
           filteredByGenre.filter((manga) => manga.score >= 2 && manga.score < 3)
-            .filter((manga) => manga.genres.includes(genreFilter))
         );
         break;
       case "4":
@@ -107,7 +119,7 @@ export default function AnimePage() {
         break;
       case "8":
         setFilteredAnimes(
-          filteredByGenre.filter((manga) => manga.score >= 7 && manga.score <= 8)
+          filteredByGenre.filter((manga) => manga.score >= 7 && manga.score < 8)
             .filter((manga) => manga.genres.includes(genreFilter))
         );
         break;
@@ -169,15 +181,21 @@ export default function AnimePage() {
             borderLeft: "1px solid #ddd",
             backgroundColor: "#483D8B",
             marginRight: "80px" ,
+            color: "white",
           }}
         >
-          <Tab label="All" />
-          <Tab label="Action" />
-          <Tab label="Comedy" />
-          <Tab label="Drama" />
+          <Tab label="All" style={{ color: "white" }}/>
+          <Tab label="Action" style={{ color: "white" }}/>
+          <Tab label="Adventure" style={{ color: "white" }}/>
+          <Tab label="Drama" style={{ color: "white" }}/>
+          <Tab label="Fantasy" style={{ color: "white" }}/>
+          <Tab label="Horror" style={{ color: "white" }}/>
+          <Tab label="Supernatural" style={{ color: "white" }}/>
+          <Tab label="Comedy" style={{ color: "white" }}/>
+          <Tab label="Sci-Fi" style={{ color: "white" }}/>
         </Tabs>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Score</InputLabel>
+        <FormControl fullWidth >
+          <InputLabel id="demo-simple-select-label" style={{ color: "white" }}>Score</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
