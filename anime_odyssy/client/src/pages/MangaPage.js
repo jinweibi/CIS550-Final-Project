@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Button, Box, Container ,AppBar, Toolbar, Typography, Tabs, Tab,Select, FormControl, InputLabel, MenuItem} from '@mui/material';
 import { NavLink } from 'react-router-dom';
-import AnimeCard from '../components/AnimeCard';
+import MangaCard from '../components/MangaCard';
 import { Link } from 'react-router-dom';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
-
 const config = require('../config.json');
 
-export default function AnimePage() {
+export default function MangaPage() {
   const [all_mangas, setMangas] = useState([]);
   const [filteredAnimes, setFilteredAnimes] = useState([]);
   const [value, setValue] = useState(0);
@@ -18,7 +17,7 @@ export default function AnimePage() {
   const [selectedAnimeId, setSelectedAnimeId] = useState(null);
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/all_animes`)
+    fetch(`http://${config.server_host}:${config.server_port}/all_mangas`)
       .then((res) => res.json())
       .then((resJson) => setMangas(resJson));
   }, []);
@@ -165,9 +164,8 @@ export default function AnimePage() {
           marginLeft: "15px",
         }}
       >
-        {selectedAnimeId && <AnimeCard title={selectedAnimeId.title} duration={selectedAnimeId.total_duration} favorites={selectedAnimeId.favorites} score={selectedAnimeId.score} url={selectedAnimeId.URL}handleClose={() => setSelectedAnimeId(null)} />}
+        {selectedAnimeId && <MangaCard title={selectedAnimeId.title} duration={selectedAnimeId.total_duration} favorites={selectedAnimeId.favorites} score={selectedAnimeId.score} url={selectedAnimeId.URL} handleClose={() => setSelectedAnimeId(null)} />}
         {filteredAnimes.map((manga) => (
-         
           <Box
             key={manga.title}
             p={3}
@@ -205,8 +203,6 @@ export default function AnimePage() {
       </div>
       </div>
       {menuOpen && (
-
-
       <div 
         style={{
           flex: "1",

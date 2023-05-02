@@ -3,7 +3,6 @@ import { Box, Button, ButtonGroup, Link, Modal } from '@mui/material';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { NavLink } from 'react-router-dom';
 
-import { formatDuration } from '../helpers/formatter';
 const config = require('../config.json');
 
 // SongCard is a modal (a common example of a modal is a dialog window).
@@ -11,7 +10,7 @@ const config = require('../config.json');
 // but in our implementation whether the Modal is open is handled by the parent component
 // (see HomePage.js for example), since it depends on the state (selectedSongId) of the parent
 // export default function AnimeCard({ animeTitle,handleClose }) {
-  export default function AnimeCard({ title, duration, favorites, score,url,handleClose }) {
+  export default function AnimeCard({ url,title, duration, favorites, score,handleClose }) {
   
   const [barRadar, setBarRadar] = useState(true);
   const [all_animes, setAnimes] = useState([]);
@@ -54,7 +53,7 @@ const config = require('../config.json');
         style={{ background: 'white', borderRadius: '16px', border: '2px solid #000', width: 600 }}
       >
         <h1>{title}</h1>
-        <h2>Anime:&nbsp;
+        <h2>Manga:&nbsp;
           <NavLink to={url}>{title}</NavLink>
         </h2>
         <p>Duration: {duration}</p>

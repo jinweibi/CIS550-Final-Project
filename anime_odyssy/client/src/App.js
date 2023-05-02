@@ -3,20 +3,14 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 
 // import NavBar from "./components/NavBar";
-import HomePage from "./pages/HomePage";
+// import HomePage from "./pages/HomePage";
 // import "./App.css";
 import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
-<<<<<<< HEAD
-import AnimePage from "./pages/AnimePage";
-import AnimeGenre from "./pages/AnimeGenre";
-import AnimeInfoPage from "./pages/AnimeInfoPage";
-// import Register from "./pages/Register";
-=======
 import Register from "./pages/Register";
->>>>>>> 126ce8a5211f51340585dce1d4327711b06424cb
-// import AnimePage from "./pages/AnimePage";
-// import FunPage from "./pages/FunPage";
+import AnimePage from "./pages/AnimePage";
+import MangaPage from  "./pages/MangaPage";
+import FunFact from "./pages/FunFact";
 
 export const theme = createTheme({
   palette: {
@@ -41,23 +35,14 @@ function App() {
       <BrowserRouter>
         <NavBar />
         <Routes>
-          <Route path="/home" element={<HomePage />} />
+          {/* <Route path="/home" element={<HomePage />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/login/:username/:password" element={<Login />} />
-<<<<<<< HEAD
-          <Route path="/home/all_animes" element={<AnimePage />} />
-          <Route path="/home/all_animes/:animes_genre" element={<AnimeGenre />} />
-          <Route path="/home/anime/:get_anime_card" element={<AnimeInfoPage />} />
-          {/* <Route
-            path="/register/:username/:password/:gender/:age"
-            element={<Register />}
-          />
-          <Route path="/anime" element={<AnimePage />} />
-=======
           <Route path="/register" element={<Register />} />
-          {/* <Route path="/anime" element={<AnimePage />} />
->>>>>>> 126ce8a5211f51340585dce1d4327711b06424cb
-          <Route path="/fun" element={<FunPage />} /> */}
+          <Route path="/all_animes" element={<AnimePage />} />
+          <Route path="/all_mangas" element={<MangaPage />} />
+          <Route path="/funfacts" element={<FunFact />} />
+          {/* <Route path="/fun" element={<FunPage />} /> */}
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

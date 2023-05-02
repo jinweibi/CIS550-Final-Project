@@ -21,12 +21,12 @@ app.get("/home/recent_animes", routes.recent_10_animes);
 app.get("/search", routes.search);
 app.get("/character/:character_id", routes.get_character_id);
 app.get("/anime/:source/:title", routes.get_manga_anime_info);
-app.get("/favorite/:username", routes.get_favorite);
-app.get("/home/all_animes", routes.all_animes);
-app.get("/home/all_animes/:animes_genre", routes.animes_genre);
-app.get("/home/anime/:get_anime_card", routes.get_anime_card);
-// app.get("/home/:animes_year", routes.animes_year);
-// app.get("/home/:animes_genre", routes.animes_genre);
+app.get("/favorite/:title", routes.get_favorite);
+app.get("/all_animes", routes.all_animes);
+app.get("/all_mangas", routes.all_mangas);
+app.get("/funfacts/whitehair", routes.white_hair);
+app.get("/funfacts/differenthair", routes.different_hair_color);
+app.get("/popular", routes.popular);
 
 app.listen(config.server_port, () => {
   console.log(

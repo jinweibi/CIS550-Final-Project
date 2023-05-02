@@ -45,34 +45,55 @@ const random = async function (req, res) {
 const login = async function (req, res) {
   const username = req.query.username;
   // hash function needed (TODO)
-  const password = req.query.password;
-  connection.query(
-    `
+  const password = req.query.password ?? "";
+  if (password == "") {
+    connection.query(
+      `
     SELECT *
     FROM user
-    WHERE username = ${username}
+    WHERE username = "${username}"
   `,
-    (err, data) => {
-      if (err || data.length === 0) {
-        // user does not exist
-        // if there is an error for some reason, or if the query is empty (this should not be possible)
-        // print the error message and return an empty object instead
-        console.log(err);
-        res.status(404).send("Status: Not Found");
-      } else {
-        // user exist do authentication check
-        const get_password = data[0].paassword;
-        // authentication check
-        if (password === get_password) {
-          // response with OK and msg
-          res.status(200).send("Status: OK");
+      (err, data) => {
+        if (err || data.length === 0) {
+          // user does not exist
+          // if there is an error for some reason, or if the query is empty (this should not be possible)
+          // print the error message and return an empty object instead
+          console.log(err);
+          res.status(404).send("Status: Not Found");
         } else {
-          // response with 401 and error msg
-          res.status(401).send("Status: Unauthorized");
+          res.status(200).send("Status: OK");
         }
       }
-    }
-  );
+    );
+  } else {
+    connection.query(
+      `
+    SELECT *
+    FROM user
+    WHERE username = "${username}"
+  `,
+      (err, data) => {
+        if (err || data.length === 0) {
+          // user does not exist
+          // if there is an error for some reason, or if the query is empty (this should not be possible)
+          // print the error message and return an empty object instead
+          console.log(err);
+          res.status(404).send("Status: Not Found");
+        } else {
+          // user exist do authentication check
+          const get_password = data[0].password;
+          // authentication check
+          if (password === get_password) {
+            // response with OK and msg
+            res.status(200).send("Status: OK");
+          } else {
+            // response with 401 and error msg
+            res.status(401).send("Status: Unauthorized");
+          }
+        }
+      }
+    );
+  }
 };
 
 // Route 2: POST /register
@@ -82,21 +103,63 @@ const register = async function (req, res) {
   const password = req.query.password;
   const gender = req.query.gender;
   const age = req.query.age;
-  connection.query(
-    `
-    INSERT INTO user (username, password, gender, age) VALUES (${username}, ${password}, ${gender}, ${age})
-  `,
-    (err, data) => {
-      if (err) {
-        // password already exist or other issue (PK constraint)
-        console.log(err);
-        res.status(409).send("Status: Conflict");
-      } else {
-        console.log("1 user info inserted");
-        res.status(201).status("Status: Created");
+  if (!gender && !age) {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', NULL, NULL)`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
       }
-    }
-  );
+    );
+  } else if (!gender) {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', NULL, ${age})`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
+      }
+    );
+  } else if (!age) {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', '${gender}', NULL)`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
+      }
+    );
+  } else {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', '${gender}', ${age})`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
+      }
+    );
+  }
 };
 
 // Route 3: GET /search
@@ -288,7 +351,7 @@ const recent_10_animes = async function (req, res) {
 // Route 5: GET /top_10_anime/:type
 const top_animes = async function (req, res) {
   const type = req.query.type ?? "anime";
-  // delete limit 10; 
+
   if (type === "anime") {
     // get anime
     connection.query(
@@ -297,7 +360,7 @@ const top_animes = async function (req, res) {
     from anime3 
     where total_duration is not null
     order by score, favorites desc
-    limit 10
+    limit 10; 
   `,
       (err, data) => {
         if (err || data.length === 0) {
@@ -316,7 +379,7 @@ const top_animes = async function (req, res) {
     from anime3 
     where total_duration is null
     order by score, favorites desc
-    limit 10
+    limit 10; 
     
   `,
       (err, data) => {
@@ -419,6 +482,7 @@ const get_character_id = async function (req, res) {
   // res.json([]); // replace this with your implementation
   const character_id = req.params.character_id;
   // like 'Fullmetal Alchemist: Brotherhood'
+  console.log(character_id)
   connection.query(
     `
   select names, hair_color, gender, tags, anime3.source, anime3.title
@@ -442,16 +506,44 @@ const get_character_id = async function (req, res) {
 // POST/DELETE/favorites
 
 // Route 10: GET /get_favorite
+// const get_favorite = async function (req, res) {
+  
+//   const fav = req.params.title;
+//   // like 'Fullmetal Alchemist: Brotherhood'
+//   connection.query(
+//     `
+//   With userFavorite AS
+//   (select source, title,genres
+//   from anime3 join characters on source = 'manga'
+//   where title = '${fav}')
+
+//   select anime3.source, anime3.title, anime3.genres
+//   from anime3 ,userFavorite
+//   where anime3.genres = userFavorite.genres
+//   limit 50;
+//   `,
+//     (err, data) => {
+//       if (err || data.length === 0) {
+//         console.log(err);
+//         res.json({});
+//       } else {
+//         res.json(data);
+//       }
+//     }
+//   );
+// };
+
+// Route 10: GET /get_favorite
 const get_favorite = async function (req, res) {
-  // TODO (TASK 7): implement a route that given an album_id, returns all songs on that album ordered by track number (ascending)
-  // res.json([]); // replace this with your implementation
+  
   const fav = req.params.title;
   // like 'Fullmetal Alchemist: Brotherhood'
+  console.log(fav)
   connection.query(
     `
   With userFavorite AS
   (select source, title,genres
-  from anime3 join characters on source = 'manga'
+  from anime3 
   where title = '${fav}')
 
   select anime3.source, anime3.title, anime3.genres
@@ -459,6 +551,7 @@ const get_favorite = async function (req, res) {
   where anime3.genres = userFavorite.genres
   limit 50;
   `,
+ 
     (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
@@ -470,120 +563,171 @@ const get_favorite = async function (req, res) {
   );
 };
 
+
+
 // Route 11: GET /all_animes/:type
 const all_animes = async function (req, res) {
-  const type = req.query.type ?? "anime";
-  // delete limit 10; 
-  
-  // if (type === "anime") {
+  let genre = req.query.genre ?? ""; 
+  let query = "";
+  const lowscore = req.query.mangas_low ?? 0;
+  const highscore = req.query.mangas_high ?? 10;
+
     // get anime
-    connection.query(
-      `
-      select *
-      from anime3
+  query = `
+    select * 
+    from anime3 
+    where total_duration is not null
+      and (${lowscore} <= score and score<= ${highscore})
+  `;
+  
+  if (genre) {
+    query += ` and genres like '%${genre}%'`; 
+  }
+  query += " order by score desc limit 300";
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
+
+
+};
+
+// Route 11: GET /all_mangas/:type
+const all_mangas = async function (req, res) {
+  const type = req.query.type ?? "manga";
+  let genre = req.query.genre ?? ""; 
+  let query = "";
+  const lowscore = req.query.mangas_low ?? 0;
+  const highscore = req.query.mangas_high ?? 10;
+
+  if (type === "manga") {
+    // get anime
+    query = `
+      select * 
+      from anime3 
+      where total_duration is null
+        and ${lowscore} <= score and score<= ${highscore}
+    `;
+  } else {
+    // get manga
+    query = `
+      select * 
+      from anime3 
       where total_duration is not null
-      order by score desc
-      limit 100;
-  `,
-      (err, data) => {
-        if (err || data.length === 0) {
-          console.log(err);
-          res.json({});
-        } else {
-          res.json(data);
-        }
-      }
-    );
-  // } 
-};
-
-// Route 12: GET /animes_year/:type
-// genres like '%${genres}%'
-// where total_duration is not null and anime3.genres LIKE CONCAT ('%\'', '${genre}' , '\'%')
-// select * 
-//     from anime3 
-    
-//     where (total_duration is not null) and (anime3.genres LIKE CONCAT ('%\'', '${genre}' , '\'%'))
-//     order by score, favorites desc
-//     limit 100
-const animes_year = async function (req, res) {
-  const year = req.params.year;
+        and ${lowscore} <= score and score<= ${highscore}
+    `;
+  }
   
-    connection.query(
-      `
-      select *
-from anime3
-where ( anime3.start_date LIKE '%${year}%')
-order by score desc
-limit 100;
-  `,
-      (err, data) => {
-        if (err || data.length === 0) {
-          console.log(err);
-          res.json({});
-        } else {
-          res.json(data);
-        }
-      }
-    );
-
+  if (genre) {
+    query += ` and genres like '%${genre}%'`; 
+  }
+  query += " order by score desc limit 300";
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
 };
 
-
-// Route 13: GET /all_animes/:animes_genre
-const animes_genre = async function (req, res) {
-  // const type = req.query.type ?? "anime";
-  const genres = req.params.animes_genre;
-  // delete limit 10; 
+// Route 12: GET /get_white_hair
+const white_hair = async function (req, res) {
   
-  // if (type === "anime") {
-    // get anime
-    connection.query(
-      `
-      select *
-      from anime3
-      where (anime3.total_duration is not null) and (anime3.genres like '%${genres}%')
-      order by score desc
-      limit 300;
-  `,
-      (err, data) => {
-        if (err || data.length === 0) {
-          console.log(err);
-          res.json({});
-        } else {
-          res.json(data);
-        }
-      }
-    );
-  // } 
-};
-
-// Route 14: GET /anime/get_anime_card
-const get_anime_card = async function (req, res) {
- 
-  const title = req.params.get_anime_card;
-
+  const fav = req.params.title;
+  // like 'Fullmetal Alchemist: Brotherhood'
+  console.log(fav)
   connection.query(
     `
-    select *
-      from anime3
-      where (anime3.total_duration is not null) and (anime3.title like '${title}')
-      order by score desc
-      limit 300;
- 
+    WITH T1 AS ( SELECT A.title FROM anime1 A JOIN
+      (SELECT 'Action' AS genre UNION ALL SELECT 'Adventure' UNION ALL SELECT 'Comedy'
+      UNION ALL SELECT 'Drama' UNION ALL SELECT 'Fantasy') G ON A.genres
+      LIKE CONCAT('%', G.genre, '%') GROUP BY A.title HAVING COUNT(DISTINCT G.genre) = 5),
+      T2 AS ( SELECT AVG(score) AS average_score FROM anime ),
+      T3 AS ( SELECT title FROM anime, T2 WHERE score > T2.average_score GROUP BY title),
+      T4 AS ( SELECT T1.title FROM T1, T3 WHERE T1.title = T3.title )
+      SELECT C.character_id, C.names FROM characters C,
+                                          T4 WHERE C.manga LIKE CONCAT('%', T4.title, '%')
+                                                OR C.anime LIKE CONCAT('%', T4.title, '%')
+                                                       AND C.hair_color = 'White Hair'
+                                             ORDER BY C.names
+      limit 20
+   
   `,
+ 
     (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
         res.json({});
       } else {
-        res.json({data});
+        res.json(data);
       }
     }
   );
 };
 
+// Route 13: GET /different_hair_color
+const different_hair_color = async function (req, res) {
+  
+  const fav = req.params.title;
+  // like 'Fullmetal Alchemist: Brotherhood'
+  console.log(fav)
+  connection.query(
+    `
+    with t1 as (SELECT * FROM anime A, characters C WHERE A.source = 'manga'
+                                                  AND C.anime LIKE CONCAT('%', A.title, '%')),
+    t2 as (SELECT a1.title FROM anime a1 WHERE a1.source = 'manga'
+                                           and (a1.start_date LIKE '2023%' OR a1.start_date LIKE '2022%'
+OR a1.start_date LIKE '2021%') ORDER BY a1.favorites) select t1.hair_color, count(t1.hair_color)
+    as color_num from t1 join t2 on t1.title = t2.title
+                 group by t1.hair_color order by color_num desc
+                 limit 10
+  `,
+ 
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data);
+      }
+    }
+  );
+};
 
+// Route 14: GET /different_hair_color
+const popular = async function (req, res) {
+  
+  const fav = req.params.title;
+  // like 'Fullmetal Alchemist: Brotherhood'
+  console.log(fav)
+  connection.query(
+    `
+    With top10 AS ( select source, title, score,favorites,start_date from anime
+      where anime.source = 'manga' and (anime.start_date LIKE '%2020%' OR
+                                        anime.start_date LIKE '%2021%' OR anime.start_date LIKE '%2022%'
+                                            OR anime.start_date LIKE '%2023%')
+      order by score desc limit 10)
+      select characters.names, characters.hair_color, favorites,characters.gender from top10
+          join characters on top10.source = 'manga' AND characters.anime LIKE CONCAT('%', top10.title, '%')
+      order by favorites desc;
+  `,
+ 
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data);
+      }
+    }
+  );
+};
 
 module.exports = {
   login,
@@ -597,7 +741,8 @@ module.exports = {
   get_character_id,
   get_favorite,
   all_animes,
-  animes_year,
-  animes_genre,
-  get_anime_card,
+  all_mangas,
+  white_hair,
+  different_hair_color,
+  popular,
 };

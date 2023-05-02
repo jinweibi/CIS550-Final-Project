@@ -41,8 +41,9 @@ export default function NavBar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <NavText href="/" text="ANIME ODYSSY" isMain />
-          <NavText href="/anime" text="ANIMES" />
-          <NavText href="/manga" text="MANGA" />
+          <NavText href="/all_animes" text="ANIMES" />
+          <NavText href="/all_mangas" text="MANGA" />
+          <NavText href="/funfacts" text="FunFacts" />
           <div style={{ flexGrow: 1 }} />
           <NavText href="/login" text="LOGIN" />
           <IconButton color="inherit" aria-label="search" href="/search">
