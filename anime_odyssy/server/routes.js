@@ -22,6 +22,7 @@ const random = async function (req, res) {
     `
     SELECT *
     FROM anime3
+    WHERE genres LIKE "%Fantasy%" AND genres LIKE "%Comedy%"
     ORDER BY RAND()
     LIMIT 1
   `,
@@ -181,7 +182,8 @@ const search = async function (req, res) {
     // characters
     connection.query(
       `
-        with anime_satisfy as (select * from anime3
+        select C.names, C.hair_color, C.character_id, C.gender, C.tags, C.anime, C.manga
+        from (select * from anime3
                               where title like '%${title}%'
                               and score >= ${score_low}
                               and score <= ${score_high}
@@ -190,9 +192,7 @@ const search = async function (req, res) {
                               and total_duration >= ${total_duration_low}
                               and total_duration <= ${total_duration_high}                   
                               and genres like '%${genres}%'
-                              and release_year like '%${release_year}%')
-        select C.names, C.hair_color, C.character_id, C.gender, C.tags, C.anime, C.manga
-        from anime_satisfy, characters C
+                              and start_date like '%${release_year}%') anime_satisfy, characters C
         where C.anime like CONCAT('%\'', A.title, '\'%') 
               or C.manga like CONCAT('%\'', A.title, '\'%')
               and C.hair_color like '%${char_hair_color}%'
@@ -212,23 +212,23 @@ const search = async function (req, res) {
     // animes
     connection.query(
       `
-        with A as (select * from anime3
-                  where title like '%${title_or_name}%'
-                  and score >= ${score_low}
-                  and score <= ${score_high}
-                  and favorites >= ${favorites_low}
-                  and favorites <= ${favorites_high}  
-                  and total_duration >= ${total_duration_low}
-                  and total_duration <= ${total_duration_high}                   
-                  and genres like '%${genres}%'
-                  and release_year like '%${release_year}%'
-                  and total_duration is not null)
-        select A.source, A.title, A.episodes, A.score, A.URL, A.favorites, A.genres, A.start_date, A.total_duration
-        from A, characters C
-        where C.anime like CONCAT('%\'', A.title, '\'%') 
-              or C.manga like CONCAT('%\'', A.title, '\'%')
-              and C.hair_color like '%${char_hair_color}%'
-              and C.gender like '%${char_gender}%';
+        SELECT A.source, A.title, A.episodes, A.score, A.URL, A.favorites, A.genres, A.start_date, A.total_duration
+        FROM (
+          SELECT * FROM anime3
+          WHERE title LIKE '%${title_or_name}%'
+          AND score >= ${score_low}
+          AND score <= ${score_high}
+          AND favorites >= ${favorites_low}
+          AND favorites <= ${favorites_high}  
+          AND total_duration >= ${total_duration_low}
+          AND total_duration <= ${total_duration_high}                   
+          AND genres LIKE '%${genres}%'
+          AND start_date LIKE '%${release_year}%'
+        ) A
+        JOIN characters C ON C.anime LIKE CONCAT('%', A.title, '%')
+        WHERE C.hair_color LIKE '%${char_hair_color}%'
+        AND C.gender LIKE '%${char_gender}%'
+        LIMIT 50;
         `,
       (err, data) => {
         if (err) {
@@ -243,22 +243,22 @@ const search = async function (req, res) {
     // animes
     connection.query(
       `
-        with A as (select * from anime3
-                  where title like '%${title_or_name}%'
-                  and score >= ${score_low}
-                  and score <= ${score_high}
-                  and favorites >= ${favorites_low}
-                  and favorites <= ${favorites_high}  
-                  and total_duration >= ${total_duration_low}
-                  and total_duration <= ${total_duration_high}                   
-                  and genres like '%${genres}%'
-                  and release_year like '%${release_year}%')
-        select A.source, A.title, A.episodes, A.score, A.URL, A.favorites, A.genres, A.start_date, A.total_duration
-        from A, characters C
-        where C.anime like CONCAT('%\'', A.title, '\'%') 
-              or C.manga like CONCAT('%\'', A.title, '\'%')
-              and C.hair_color like '%${char_hair_color}%'
-              and C.gender like '%${char_gender}%';
+        SELECT A.source, A.title, A.episodes, A.score, A.URL, A.favorites, A.genres, A.start_date, A.total_duration
+        FROM (
+          SELECT * FROM anime3
+          WHERE title LIKE '%${title_or_name}%'
+          AND score >= ${score_low}
+          AND score <= ${score_high}
+          AND favorites >= ${favorites_low}
+          AND favorites <= ${favorites_high}  
+          AND total_duration IS NULL                 
+          AND genres LIKE '%${genres}%'
+          AND start_date LIKE '%${release_year}%'
+        ) A
+        JOIN characters C ON C.manga LIKE CONCAT('%', A.title, '%')
+        WHERE C.hair_color LIKE '%${char_hair_color}%'
+        AND C.gender LIKE '%${char_gender}%'
+        LIMIT 50;
         `,
       (err, data) => {
         if (err) {
@@ -273,22 +273,23 @@ const search = async function (req, res) {
     // anime and manga
     connection.query(
       `
-        with A as (select * from anime3
-                  where title like '%${title_or_name}%'
-                  and score >= ${score_low}
-                  and score <= ${score_high}
-                  and favorites >= ${favorites_low}
-                  and favorites <= ${favorites_high}  
-                  and total_duration >= ${total_duration_low}
-                  and total_duration <= ${total_duration_high}                   
-                  and genres like '%${genres}%'
-                  and release_year like '%${release_year}%')
-        select A.source, A.title, A.episodes, A.score, A.URL, A.favorites, A.genres, A.start_date, A.total_duration
-        from A, characters C
-        where C.anime like CONCAT('%\'', A.title, '\'%') 
-              or C.manga like CONCAT('%\'', A.title, '\'%')
-              and C.hair_color like '%${char_hair_color}%'
-              and C.gender like '%${char_gender}%';
+        SELECT A.source, A.title, A.episodes, A.score, A.URL, A.favorites, A.genres, A.start_date, A.total_duration
+        FROM (
+          SELECT * FROM anime3
+          WHERE title LIKE '%${title_or_name}%'
+          AND score >= ${score_low}
+          AND score <= ${score_high}
+          AND favorites >= ${favorites_low}
+          AND favorites <= ${favorites_high}  
+          AND total_duration >= ${total_duration_low}
+          AND total_duration <= ${total_duration_high}                   
+          AND genres LIKE '%${genres}%'
+          AND start_date LIKE '%${release_year}%'
+        ) A
+        JOIN characters C ON C.anime LIKE CONCAT('%', A.title, '%')
+        WHERE C.hair_color LIKE '%${char_hair_color}%'
+        AND C.gender LIKE '%${char_gender}%'
+        LIMIT 50;
         `,
       (err, data) => {
         if (err) {
@@ -452,18 +453,16 @@ const top_mangas = async function (req, res) {
 
 // Route 7: GET /get_anime/manga_information
 const get_manga_anime_info = async function (req, res) {
-  const source = req.params.source;
-  const title = req.params.title;
+  const source = req.params.source ?? "123";
+  const title = req.params.title ?? "";
+  // console.log(source);
+  // console.log(title);
 
   connection.query(
     `
-  with t1 as
-   (SELECT *
-    FROM anime3 A, characters C
-    WHERE (C.anime LIKE CONCAT('%\'', A.title, '\'%') or C.anime LIKE CONCAT('%\'', A.title, '\'%')))
-    select t1.source, t1.title, t1.score, t1.genres, t1.start_date, t1.total_duration, t1.episodes, t1.URL, GROUP_CONCAT(DISTINCT t1.names) AS names , GROUP_CONCAT(DISTINCT t1.character_id) AS character_id
-    from t1
-    where t1.title = '${title}' and t1.source = '${source}'
+    select *
+    from anime3
+    where title LIKE '${title}' and source LIKE '${source}'
   `,
     (err, data) => {
       if (err || data.length === 0) {
@@ -471,6 +470,7 @@ const get_manga_anime_info = async function (req, res) {
         res.json({});
       } else {
         res.json(data);
+        console.log(data);
       }
     }
   );
@@ -478,7 +478,7 @@ const get_manga_anime_info = async function (req, res) {
 
 // Route 8: character/characterId
 const get_character_id = async function (req, res) {
-  // TODO (TASK 7): implement a route that given an album_id, returns all songs on that album ordered by track number (ascending)
+  // TODO (TASK 7): implement a route that given an character_id, returns all songs on that album ordered by track number (ascending)
   // res.json([]); // replace this with your implementation
   const character_id = req.params.character_id;
   // like 'Fullmetal Alchemist: Brotherhood'
@@ -502,13 +502,81 @@ const get_character_id = async function (req, res) {
 };
 
 // Route 9: favorites
-// POST/DELETE/favorites
+
+const get_user_favorites = async function (req, res) {
+  const username = req.params.username ?? "";
+
+  connection.query(
+    `
+  SELECT *
+  FROM favorite
+  WHERE username = "${username}"
+  `,
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data);
+      }
+    }
+  );
+};
+
+// add favorites
+// POST /add_favorites/:username/:title/:source
+const add_favorite = async function (req, res) {
+  const username = req.params.username ?? "";
+  const title = req.params.title ?? "";
+  const source = req.params.source ?? "";
+  // const url = req.params.url ?? "";
+
+  connection.query(
+    `
+  INSERT INTO favorite (username, title, source) VALUES ('${username}', '${title}', '${source}')
+  `,
+    (err, data) => {
+      if (err) {
+        // password already exist or other issue (PK constraint)
+        console.log(err);
+        res.status(409).send("Status: Conflict");
+      } else {
+        console.log("1 favorite item inserted");
+        res.status(201).send("Status: Created");
+      }
+    }
+  );
+};
+
+// Route 9: delete favorites
+// POST /delete_favorites/:username/:title/:source
+const dele_favorite = async function (req, res) {
+  const username = req.params.username ?? "";
+  const title = req.params.title ?? "";
+  const source = req.params.source ?? "";
+
+  connection.query(
+    `
+  DELETE FROM favorite WHERE username = "${username}" AND source = "${source}" AND title = "${title}"
+  `,
+    (err, data) => {
+      if (err) {
+        // password already exist or other issue (PK constraint)
+        console.log(err);
+        res.status(500).send("Status: Internal Server Error");
+      } else {
+        console.log("1 favorite item deleted");
+        res.status(200).send("Status: OK");
+      }
+    }
+  );
+};
 
 // Route 10: GET /get_favorite
 const get_favorite = async function (req, res) {
   // TODO (TASK 7): implement a route that given an album_id, returns all songs on that album ordered by track number (ascending)
   // res.json([]); // replace this with your implementation
-  const fav = req.params.title;
+  const fav = req.params.username;
   // like 'Fullmetal Alchemist: Brotherhood'
   connection.query(
     `
@@ -544,4 +612,7 @@ module.exports = {
   get_manga_anime_info,
   get_character_id,
   get_favorite,
+  get_user_favorites,
+  add_favorite,
+  dele_favorite,
 };

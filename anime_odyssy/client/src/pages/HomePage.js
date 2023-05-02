@@ -1,20 +1,25 @@
 import logo from "../images/logo2.png";
-import React, { useEffect, useState } from "react";
+import pic from "../images/pic.webp";
+import React, { useContext, useEffect, useState } from "react";
 import { Box, Container, AppBar, Toolbar, Typography } from "@mui/material";
 import { NavLink } from "react-router-dom";
 // import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "../styles/HomePage.css";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { AuthContext } from "../components/AuthContex";
 
 const config = require("../config.json");
 
 function HomePage() {
+  const { isLoggedIn, handleLogout } = useContext(AuthContext);
   const [animeForToday, setAnimeForToday] = useState({});
   const [topAnime, setTopAnime] = useState([]);
   const [topManga, setTopManga] = useState([]);
   const [recentAnime, setRecentAnime] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFavorited, setIsFavorited] = useState({});
 
   useEffect((async) => {
     let timeout = setTimeout(() => {
@@ -25,7 +30,7 @@ function HomePage() {
       .then((resJson) => {
         console.log(resJson); // Debugging line
         setAnimeForToday(resJson);
-        console.log(animeForToday); // Debugging line
+        console.log(animeForToday.data[0]); // Debugging line
       })
       .catch((error) => {
         console.error(error);
@@ -54,6 +59,10 @@ function HomePage() {
         setTopManga(resJson);
         console.log(topManga);
       });
+    const username = sessionStorage.getItem("username");
+    console.log(username);
+    const animeList = JSON.parse(sessionStorage.getItem("favorite_list"));
+    console.log(animeList);
     return () => clearTimeout(timeout); // Clear timeout on unmount
   }, []);
 
@@ -70,8 +79,46 @@ function HomePage() {
 
   const specialCardStyle = {
     border: "2px solid #000",
-    width: "1100px",
+    width: "1150px",
     height: "350px",
+  };
+
+  const handleFavoriteClick = (anime) => {
+    const { source, title, URL } = anime; // extract the source and title properties
+    const username = sessionStorage.getItem("username");
+    setIsFavorited((prevState) => ({
+      ...prevState,
+      [title]: !prevState[title],
+    }));
+
+    if (!isFavorited[title]) {
+      console.log(URL);
+      // Send a request to the backend with the source and title properties
+      fetch(
+        `http://${config.server_host}:${config.server_port}/add_favorite/${username}/${title}/${source}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          alert(data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+      // Send a request to the backend with the source and title properties
+      fetch(
+        `http://${config.server_host}:${config.server_port}/dele_favorite/${username}/${title}/${source}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          alert(data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   };
 
   return isLoading ? (
@@ -82,7 +129,24 @@ function HomePage() {
     <div>
       <AppBar position="static" style={{ backgroundColor: "blue" }}>
         <Toolbar>
-          <Typography variant="h6">Recommendation for today</Typography>
+          <Typography
+            style={{
+              fontFamily: "Papyrus",
+              fontWeight: 300,
+              letterSpacing: ".1rem",
+            }}
+            variant="h6"
+          >
+            Recommendation for today:{" "}
+          </Typography>
+          <h4>
+            <NavLink
+              to={`${animeForToday.data[0].URL}`}
+              style={{ color: "white" }}
+            >
+              {animeForToday.data[0].title}
+            </NavLink>
+          </h4>
         </Toolbar>
       </AppBar>
       <Container>
@@ -94,20 +158,30 @@ function HomePage() {
           }}
         >
           {
-            <div key={animeForToday.title} style={{ width: `${cardWidth}px` }}>
+            <div
+              key={animeForToday.data[0].title}
+              style={{ width: `${cardWidth}px` }}
+            >
+              {isLoggedIn && (
+                <div
+                  className="anime-card-favorite"
+                  onClick={() => handleFavoriteClick(animeForToday.data[0])}
+                >
+                  {isFavorited[animeForToday.data[0].title] ? (
+                    <FaHeart />
+                  ) : (
+                    <FaRegHeart />
+                  )}
+                </div>
+              )}
               <Box style={specialCardStyle}>
                 <React.Fragment>
                   <img
-                    src={animeForToday.URL}
-                    alt={animeForToday.title}
-                    style={{ width: "1100px", height: "350px" }}
+                    src={animeForToday.data[0].URL}
+                    // src={pic}
+                    alt={animeForToday.data[0].title}
+                    style={{ width: "1150px", height: "350px" }}
                   />
-
-                  <h4>
-                    <NavLink to={`${animeForToday.URL}`}>
-                      {animeForToday.title}
-                    </NavLink>
-                  </h4>
                 </React.Fragment>
               </Box>
             </div>
@@ -116,7 +190,16 @@ function HomePage() {
       </Container>
       <AppBar position="static" style={{ backgroundColor: "blue" }}>
         <Toolbar>
-          <Typography variant="h6">Recently released</Typography>
+          <Typography
+            style={{
+              fontFamily: "Papyrus",
+              fontWeight: 300,
+              letterSpacing: ".1rem",
+            }}
+            variant="h6"
+          >
+            Recently released
+          </Typography>
         </Toolbar>
       </AppBar>
       <Container>
@@ -129,6 +212,14 @@ function HomePage() {
         >
           {recentAnime.map((anime) => (
             <div key={anime.title} style={{ width: `${cardWidth}px` }}>
+              {isLoggedIn && (
+                <div
+                  className="anime-card-favorite"
+                  onClick={() => handleFavoriteClick(anime)}
+                >
+                  {isFavorited[anime.title] ? <FaHeart /> : <FaRegHeart />}
+                </div>
+              )}
               <Box style={cardStyle}>
                 <React.Fragment>
                   <img
@@ -148,7 +239,16 @@ function HomePage() {
       </Container>
       <AppBar position="static" style={{ backgroundColor: "blue" }}>
         <Toolbar>
-          <Typography variant="h6">Top 10 Anime</Typography>
+          <Typography
+            style={{
+              fontFamily: "Papyrus",
+              fontWeight: 300,
+              letterSpacing: ".1rem",
+            }}
+            variant="h6"
+          >
+            Top 10 Anime
+          </Typography>
         </Toolbar>
       </AppBar>
       <Container>
@@ -161,6 +261,14 @@ function HomePage() {
         >
           {topAnime.map((anime) => (
             <div key={anime.title} style={{ width: `${cardWidth}px` }}>
+              {isLoggedIn && (
+                <div
+                  className="anime-card-favorite"
+                  onClick={() => handleFavoriteClick(anime)}
+                >
+                  {isFavorited[anime.title] ? <FaHeart /> : <FaRegHeart />}
+                </div>
+              )}
               <Box style={cardStyle}>
                 <React.Fragment>
                   <img
@@ -180,7 +288,16 @@ function HomePage() {
       </Container>
       <AppBar position="static" style={{ backgroundColor: "blue" }}>
         <Toolbar>
-          <Typography variant="h6">Top 10 Manga</Typography>
+          <Typography
+            style={{
+              fontFamily: "Papyrus",
+              fontWeight: 300,
+              letterSpacing: ".1rem",
+            }}
+            variant="h6"
+          >
+            Top 10 Manga
+          </Typography>
         </Toolbar>
       </AppBar>
       <Container>
@@ -193,6 +310,14 @@ function HomePage() {
         >
           {topManga.map((anime) => (
             <div key={anime.title} style={{ width: `${cardWidth}px` }}>
+              {isLoggedIn && (
+                <div
+                  className="anime-card-favorite"
+                  onClick={() => handleFavoriteClick(anime)}
+                >
+                  {isFavorited[anime.title] ? <FaHeart /> : <FaRegHeart />}
+                </div>
+              )}
               <Box style={cardStyle}>
                 <React.Fragment>
                   <img

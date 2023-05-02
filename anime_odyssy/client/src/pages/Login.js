@@ -65,7 +65,17 @@ function Login() {
       ).then((res) => {
         console.log(res);
         if (res.status === 200) {
-          // alert("Successful login!");
+          alert("Successful login!");
+          // fetch for favorite anime list for the user and store in the session storage
+          fetch(
+            `http://${config.server_host}:${config.server_port}/get_user_favorite/${username}`
+          )
+            .then((res) => res.json())
+            .then((resJson) => {
+              sessionStorage.setItem("favorite_list", JSON.stringify(resJson));
+              console.log(resJson);
+            });
+          sessionStorage.setItem("username", `${username}`);
           window.location.href = "/home";
         } else {
           alert("Incorrect password.");

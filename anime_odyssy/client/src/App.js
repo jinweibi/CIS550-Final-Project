@@ -8,6 +8,8 @@ import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
 import Register from "./pages/Register";
+import { AuthProvider } from "./components/AuthContex";
+import Favorites from "./pages/Favorites";
 // import AnimePage from "./pages/AnimePage";
 // import FunPage from "./pages/FunPage";
 
@@ -29,20 +31,24 @@ export const theme = createTheme({
 // NavBar component allowing us to navigate between pages (with hyperlinks)
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <NavBar />
-        <Routes>
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/login/:username/:password" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          {/* <Route path="/anime" element={<AnimePage />} />
+    <AuthProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/login/:username/:password" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/favorite" element={<Favorites />} />
+            {/* <Route path="/anime" element={<AnimePage />} />
           <Route path="/fun" element={<FunPage />} /> */}
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 
