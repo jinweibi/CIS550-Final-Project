@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import AnimePage from "./pages/AnimePage";
 import MangaPage from  "./pages/MangaPage";
 import FunFact from "./pages/FunFact";
+import SearchPage from "./pages/SearchPage";
 
 export const theme = createTheme({
   palette: {
@@ -42,6 +43,7 @@ function App() {
           <Route path="/all_animes" element={<AnimePage />} />
           <Route path="/all_mangas" element={<MangaPage />} />
           <Route path="/funfacts" element={<FunFact />} />
+          <Route path="/searchtitle" element={<SearchPage />} />
           {/* <Route path="/fun" element={<FunPage />} /> */}
         </Routes>
       </BrowserRouter>

@@ -193,8 +193,8 @@ const search = async function (req, res) {
                               and release_year like '%${release_year}%')
         select C.names, C.hair_color, C.character_id, C.gender, C.tags, C.anime, C.manga
         from anime_satisfy, characters C
-        where C.anime like CONCAT('%\'', A.title, '\'%') 
-              or C.manga like CONCAT('%\'', A.title, '\'%')
+        where C.anime like CONCAT('%', A.title, '%') 
+              or C.manga like CONCAT('%', A.title, '%')
               and C.hair_color like '%${char_hair_color}%'
               and C.gender like '%${char_gender}%'
               and C.name like '%${title_or_name}%';
@@ -502,36 +502,6 @@ const get_character_id = async function (req, res) {
   );
 };
 
-// Route 9: favorites
-// POST/DELETE/favorites
-
-// Route 10: GET /get_favorite
-// const get_favorite = async function (req, res) {
-  
-//   const fav = req.params.title;
-//   // like 'Fullmetal Alchemist: Brotherhood'
-//   connection.query(
-//     `
-//   With userFavorite AS
-//   (select source, title,genres
-//   from anime3 join characters on source = 'manga'
-//   where title = '${fav}')
-
-//   select anime3.source, anime3.title, anime3.genres
-//   from anime3 ,userFavorite
-//   where anime3.genres = userFavorite.genres
-//   limit 50;
-//   `,
-//     (err, data) => {
-//       if (err || data.length === 0) {
-//         console.log(err);
-//         res.json({});
-//       } else {
-//         res.json(data);
-//       }
-//     }
-//   );
-// };
 
 // Route 10: GET /get_favorite
 const get_favorite = async function (req, res) {
@@ -729,6 +699,31 @@ const popular = async function (req, res) {
   );
 };
 
+// Route 15: GET /search_title
+const search_title = async function (req, res) {
+  
+  const title = req.params.title;
+  // like 'Fullmetal Alchemist: Brotherhood'
+  
+  connection.query(
+    `
+    select *
+        from anime3
+        where  anime3.title like '%${title}%';
+  `,
+ 
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data);
+      }
+    }
+  );
+};
+
+
 module.exports = {
   login,
   register,
@@ -745,4 +740,5 @@ module.exports = {
   white_hair,
   different_hair_color,
   popular,
+  search_title,
 };

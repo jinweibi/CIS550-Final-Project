@@ -27,6 +27,7 @@ app.get("/all_mangas", routes.all_mangas);
 app.get("/funfacts/whitehair", routes.white_hair);
 app.get("/funfacts/differenthair", routes.different_hair_color);
 app.get("/popular", routes.popular);
+app.get("/searchtitle/:title", routes.search_title);
 
 app.listen(config.server_port, () => {
   console.log(

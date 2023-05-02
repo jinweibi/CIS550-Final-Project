@@ -46,7 +46,7 @@ export default function NavBar() {
           <NavText href="/funfacts" text="FunFacts" />
           <div style={{ flexGrow: 1 }} />
           <NavText href="/login" text="LOGIN" />
-          <IconButton color="inherit" aria-label="search" href="/search">
+          <IconButton color="inherit" aria-label="search" href="/searchtitle">
             <SearchIcon />
           </IconButton>
         </Toolbar>
