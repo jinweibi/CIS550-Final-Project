@@ -22,6 +22,13 @@ export const theme = createTheme({
       default: "#f442d6",
       paper: "#f5f5f5",
     },
+    primary: {
+      main: "#f442d6",
+    },
+    background: {
+      default: "#f442d6",
+      paper: "#f5f5f5",
+    },
   },
 });
 
@@ -49,6 +56,23 @@ function App() {
         </BrowserRouter>
       </ThemeProvider>
     </AuthProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <NavBar />
+        <Routes>
+          {/* <Route path="/home" element={<HomePage />} /> */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/login/:username/:password" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/all_animes" element={<AnimePage />} />
+          <Route path="/all_mangas" element={<MangaPage />} />
+          <Route path="/funfacts" element={<FunFact />} />
+          <Route path="/searchtitle" element={<SearchPage />} />
+          {/* <Route path="/fun" element={<FunPage />} /> */}
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

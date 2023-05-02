@@ -50,6 +50,10 @@ const login = async function (req, res) {
   if (password == "") {
     connection.query(
       `
+  const password = req.query.password ?? "";
+  if (password == "") {
+    connection.query(
+      `
     SELECT *
     FROM user
     WHERE username = "${username}"
@@ -161,6 +165,63 @@ const register = async function (req, res) {
       }
     );
   }
+  if (!gender && !age) {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', NULL, NULL)`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
+      }
+    );
+  } else if (!gender) {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', NULL, ${age})`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
+      }
+    );
+  } else if (!age) {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', '${gender}', NULL)`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
+      }
+    );
+  } else {
+    connection.query(
+      `INSERT INTO user (username, password, gender, age) VALUES ('${username}', '${password}', '${gender}', ${age})`,
+      (err, data) => {
+        if (err) {
+          // password already exist or other issue (PK constraint)
+          console.log(err);
+          res.status(409).send("Status: Conflict");
+        } else {
+          console.log("1 user info inserted");
+          res.status(201).send("Status: Created");
+        }
+      }
+    );
+  }
 };
 
 // Route 3: GET /search
@@ -193,8 +254,8 @@ const search = async function (req, res) {
                               and total_duration <= ${total_duration_high}                   
                               and genres like '%${genres}%'
                               and start_date like '%${release_year}%') anime_satisfy, characters C
-        where C.anime like CONCAT('%\'', A.title, '\'%') 
-              or C.manga like CONCAT('%\'', A.title, '\'%')
+        where C.anime like CONCAT('%', A.title, '%') 
+              or C.manga like CONCAT('%', A.title, '%')
               and C.hair_color like '%${char_hair_color}%'
               and C.gender like '%${char_gender}%'
               and C.name like '%${title_or_name}%';
@@ -482,6 +543,7 @@ const get_character_id = async function (req, res) {
   // res.json([]); // replace this with your implementation
   const character_id = req.params.character_id;
   // like 'Fullmetal Alchemist: Brotherhood'
+  console.log(character_id)
   connection.query(
     `
   select names, hair_color, gender, tags, anime3.source, anime3.title
@@ -574,15 +636,15 @@ const dele_favorite = async function (req, res) {
 
 // Route 10: GET /get_favorite
 const get_favorite = async function (req, res) {
-  // TODO (TASK 7): implement a route that given an album_id, returns all songs on that album ordered by track number (ascending)
-  // res.json([]); // replace this with your implementation
-  const fav = req.params.username;
+  
+  const fav = req.params.title;
   // like 'Fullmetal Alchemist: Brotherhood'
+  console.log(fav)
   connection.query(
     `
   With userFavorite AS
   (select source, title,genres
-  from anime3 join characters on source = 'manga'
+  from anime3 
   where title = '${fav}')
 
   select anime3.source, anime3.title, anime3.genres
@@ -590,6 +652,7 @@ const get_favorite = async function (req, res) {
   where anime3.genres = userFavorite.genres
   limit 50;
   `,
+ 
     (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
@@ -600,6 +663,197 @@ const get_favorite = async function (req, res) {
     }
   );
 };
+
+
+
+// Route 11: GET /all_animes/:type
+const all_animes = async function (req, res) {
+  let genre = req.query.genre ?? ""; 
+  let query = "";
+  const lowscore = req.query.mangas_low ?? 0;
+  const highscore = req.query.mangas_high ?? 10;
+
+    // get anime
+  query = `
+    select * 
+    from anime3 
+    where total_duration is not null
+      and (${lowscore} <= score and score<= ${highscore})
+  `;
+  
+  if (genre) {
+    query += ` and genres like '%${genre}%'`; 
+  }
+  query += " order by score desc limit 300";
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
+
+
+};
+
+// Route 11: GET /all_mangas/:type
+const all_mangas = async function (req, res) {
+  const type = req.query.type ?? "manga";
+  let genre = req.query.genre ?? ""; 
+  let query = "";
+  const lowscore = req.query.mangas_low ?? 0;
+  const highscore = req.query.mangas_high ?? 10;
+
+  if (type === "manga") {
+    // get anime
+    query = `
+      select * 
+      from anime3 
+      where total_duration is null
+        and ${lowscore} <= score and score<= ${highscore}
+    `;
+  } else {
+    // get manga
+    query = `
+      select * 
+      from anime3 
+      where total_duration is not null
+        and ${lowscore} <= score and score<= ${highscore}
+    `;
+  }
+  
+  if (genre) {
+    query += ` and genres like '%${genre}%'`; 
+  }
+  query += " order by score desc limit 300";
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
+};
+
+// Route 12: GET /get_white_hair
+const white_hair = async function (req, res) {
+  
+  const fav = req.params.title;
+  // like 'Fullmetal Alchemist: Brotherhood'
+  console.log(fav)
+  connection.query(
+    `
+    WITH T1 AS ( SELECT A.title FROM anime1 A JOIN
+      (SELECT 'Action' AS genre UNION ALL SELECT 'Adventure' UNION ALL SELECT 'Comedy'
+      UNION ALL SELECT 'Drama' UNION ALL SELECT 'Fantasy') G ON A.genres
+      LIKE CONCAT('%', G.genre, '%') GROUP BY A.title HAVING COUNT(DISTINCT G.genre) = 5),
+      T2 AS ( SELECT AVG(score) AS average_score FROM anime ),
+      T3 AS ( SELECT title FROM anime, T2 WHERE score > T2.average_score GROUP BY title),
+      T4 AS ( SELECT T1.title FROM T1, T3 WHERE T1.title = T3.title )
+      SELECT C.character_id, C.names FROM characters C,
+                                          T4 WHERE C.manga LIKE CONCAT('%', T4.title, '%')
+                                                OR C.anime LIKE CONCAT('%', T4.title, '%')
+                                                       AND C.hair_color = 'White Hair'
+                                             ORDER BY C.names
+      limit 20
+   
+  `,
+ 
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data);
+      }
+    }
+  );
+};
+
+// Route 13: GET /different_hair_color
+const different_hair_color = async function (req, res) {
+  
+  const fav = req.params.title;
+  // like 'Fullmetal Alchemist: Brotherhood'
+  console.log(fav)
+  connection.query(
+    `
+    with t1 as (SELECT * FROM anime A, characters C WHERE A.source = 'manga'
+                                                  AND C.anime LIKE CONCAT('%', A.title, '%')),
+    t2 as (SELECT a1.title FROM anime a1 WHERE a1.source = 'manga'
+                                           and (a1.start_date LIKE '2023%' OR a1.start_date LIKE '2022%'
+OR a1.start_date LIKE '2021%') ORDER BY a1.favorites) select t1.hair_color, count(t1.hair_color)
+    as color_num from t1 join t2 on t1.title = t2.title
+                 group by t1.hair_color order by color_num desc
+                 limit 10
+  `,
+ 
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data);
+      }
+    }
+  );
+};
+
+// Route 14: GET /different_hair_color
+const popular = async function (req, res) {
+  
+  const fav = req.params.title;
+  // like 'Fullmetal Alchemist: Brotherhood'
+  console.log(fav)
+  connection.query(
+    `
+    With top10 AS ( select source, title, score,favorites,start_date from anime
+      where anime.source = 'manga' and (anime.start_date LIKE '%2020%' OR
+                                        anime.start_date LIKE '%2021%' OR anime.start_date LIKE '%2022%'
+                                            OR anime.start_date LIKE '%2023%')
+      order by score desc limit 10)
+      select characters.names, characters.hair_color, favorites,characters.gender from top10
+          join characters on top10.source = 'manga' AND characters.anime LIKE CONCAT('%', top10.title, '%')
+      order by favorites desc;
+  `,
+ 
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data);
+      }
+    }
+  );
+};
+
+// Route 15: GET /search_title
+const search_title = async function (req, res) {
+  
+  const title = req.params.title;
+  // like 'Fullmetal Alchemist: Brotherhood'
+  
+  connection.query(
+    `
+    select *
+        from anime3
+        where  anime3.title like '%${title}%';
+  `,
+ 
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data);
+      }
+    }
+  );
+};
+
 
 module.exports = {
   login,
@@ -615,4 +869,10 @@ module.exports = {
   get_user_favorites,
   add_favorite,
   dele_favorite,
+  all_animes,
+  all_mangas,
+  white_hair,
+  different_hair_color,
+  popular,
+  search_title,
 };
