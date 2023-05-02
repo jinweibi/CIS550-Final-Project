@@ -10,8 +10,10 @@ import NavBar from "./components/NavBar";
 import Register from "./pages/Register";
 import { AuthProvider } from "./components/AuthContex";
 import Favorites from "./pages/Favorites";
-// import AnimePage from "./pages/AnimePage";
-// import FunPage from "./pages/FunPage";
+import AnimePage from "./pages/AnimePage";
+import MangaPage from "./pages/MangaPage";
+import FunFact from "./pages/FunFact";
+import SearchPage from "./pages/SearchPage";
 
 export const theme = createTheme({
   palette: {
@@ -50,29 +52,14 @@ function App() {
             <Route path="/login/:username/:password" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/favorite" element={<Favorites />} />
-            {/* <Route path="/anime" element={<AnimePage />} />
-          <Route path="/fun" element={<FunPage />} /> */}
+            <Route path="/all_animes" element={<AnimePage />} />
+            <Route path="/all_mangas" element={<MangaPage />} />
+            <Route path="/funfacts" element={<FunFact />} />
+            <Route path="/searchtitle" element={<SearchPage />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
     </AuthProvider>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <NavBar />
-        <Routes>
-          {/* <Route path="/home" element={<HomePage />} /> */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/login/:username/:password" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/all_animes" element={<AnimePage />} />
-          <Route path="/all_mangas" element={<MangaPage />} />
-          <Route path="/funfacts" element={<FunFact />} />
-          <Route path="/searchtitle" element={<SearchPage />} />
-          {/* <Route path="/fun" element={<FunPage />} /> */}
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
   );
 }
 

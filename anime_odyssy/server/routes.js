@@ -50,14 +50,10 @@ const login = async function (req, res) {
   if (password == "") {
     connection.query(
       `
-  const password = req.query.password ?? "";
-  if (password == "") {
-    connection.query(
-      `
     SELECT *
     FROM user
     WHERE username = "${username}"
-  `,
+    `,
       (err, data) => {
         if (err || data.length === 0) {
           // user does not exist
@@ -514,16 +510,18 @@ const top_mangas = async function (req, res) {
 
 // Route 7: GET /get_anime/manga_information
 const get_manga_anime_info = async function (req, res) {
-  const source = req.params.source ?? "123";
-  const title = req.params.title ?? "";
-  // console.log(source);
-  // console.log(title);
+  const source = req.params.source;
+  const title = req.params.title;
 
   connection.query(
     `
-    select *
-    from anime3
-    where title LIKE '${title}' and source LIKE '${source}'
+  with t1 as
+   (SELECT *
+    FROM anime3 A, characters C
+    WHERE (C.anime LIKE CONCAT('%\'', A.title, '\'%') or C.anime LIKE CONCAT('%\'', A.title, '\'%')))
+    select t1.source, t1.title, t1.score, t1.genres, t1.start_date, t1.total_duration, t1.episodes, t1.URL, GROUP_CONCAT(DISTINCT t1.names) AS names , GROUP_CONCAT(DISTINCT t1.character_id) AS character_id
+    from t1
+    where t1.title = '${title}' and t1.source = '${source}'
   `,
     (err, data) => {
       if (err || data.length === 0) {
@@ -531,7 +529,6 @@ const get_manga_anime_info = async function (req, res) {
         res.json({});
       } else {
         res.json(data);
-        console.log(data);
       }
     }
   );
@@ -543,7 +540,7 @@ const get_character_id = async function (req, res) {
   // res.json([]); // replace this with your implementation
   const character_id = req.params.character_id;
   // like 'Fullmetal Alchemist: Brotherhood'
-  console.log(character_id)
+  console.log(character_id);
   connection.query(
     `
   select names, hair_color, gender, tags, anime3.source, anime3.title
@@ -636,10 +633,9 @@ const dele_favorite = async function (req, res) {
 
 // Route 10: GET /get_favorite
 const get_favorite = async function (req, res) {
-  
   const fav = req.params.title;
   // like 'Fullmetal Alchemist: Brotherhood'
-  console.log(fav)
+  console.log(fav);
   connection.query(
     `
   With userFavorite AS
@@ -652,7 +648,7 @@ const get_favorite = async function (req, res) {
   where anime3.genres = userFavorite.genres
   limit 50;
   `,
- 
+
     (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
@@ -664,25 +660,23 @@ const get_favorite = async function (req, res) {
   );
 };
 
-
-
 // Route 11: GET /all_animes/:type
 const all_animes = async function (req, res) {
-  let genre = req.query.genre ?? ""; 
+  let genre = req.query.genre ?? "";
   let query = "";
   const lowscore = req.query.mangas_low ?? 0;
   const highscore = req.query.mangas_high ?? 10;
 
-    // get anime
+  // get anime
   query = `
     select * 
     from anime3 
     where total_duration is not null
       and (${lowscore} <= score and score<= ${highscore})
   `;
-  
+
   if (genre) {
-    query += ` and genres like '%${genre}%'`; 
+    query += ` and genres like '%${genre}%'`;
   }
   query += " order by score desc limit 300";
   connection.query(query, (err, data) => {
@@ -693,14 +687,12 @@ const all_animes = async function (req, res) {
       res.json(data);
     }
   });
-
-
 };
 
 // Route 11: GET /all_mangas/:type
 const all_mangas = async function (req, res) {
   const type = req.query.type ?? "manga";
-  let genre = req.query.genre ?? ""; 
+  let genre = req.query.genre ?? "";
   let query = "";
   const lowscore = req.query.mangas_low ?? 0;
   const highscore = req.query.mangas_high ?? 10;
@@ -722,9 +714,9 @@ const all_mangas = async function (req, res) {
         and ${lowscore} <= score and score<= ${highscore}
     `;
   }
-  
+
   if (genre) {
-    query += ` and genres like '%${genre}%'`; 
+    query += ` and genres like '%${genre}%'`;
   }
   query += " order by score desc limit 300";
   connection.query(query, (err, data) => {
@@ -739,10 +731,9 @@ const all_mangas = async function (req, res) {
 
 // Route 12: GET /get_white_hair
 const white_hair = async function (req, res) {
-  
   const fav = req.params.title;
   // like 'Fullmetal Alchemist: Brotherhood'
-  console.log(fav)
+  console.log(fav);
   connection.query(
     `
     WITH T1 AS ( SELECT A.title FROM anime1 A JOIN
@@ -760,7 +751,7 @@ const white_hair = async function (req, res) {
       limit 20
    
   `,
- 
+
     (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
@@ -774,10 +765,9 @@ const white_hair = async function (req, res) {
 
 // Route 13: GET /different_hair_color
 const different_hair_color = async function (req, res) {
-  
   const fav = req.params.title;
   // like 'Fullmetal Alchemist: Brotherhood'
-  console.log(fav)
+  console.log(fav);
   connection.query(
     `
     with t1 as (SELECT * FROM anime A, characters C WHERE A.source = 'manga'
@@ -789,7 +779,7 @@ OR a1.start_date LIKE '2021%') ORDER BY a1.favorites) select t1.hair_color, coun
                  group by t1.hair_color order by color_num desc
                  limit 10
   `,
- 
+
     (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
@@ -803,10 +793,9 @@ OR a1.start_date LIKE '2021%') ORDER BY a1.favorites) select t1.hair_color, coun
 
 // Route 14: GET /different_hair_color
 const popular = async function (req, res) {
-  
   const fav = req.params.title;
   // like 'Fullmetal Alchemist: Brotherhood'
-  console.log(fav)
+  console.log(fav);
   connection.query(
     `
     With top10 AS ( select source, title, score,favorites,start_date from anime
@@ -818,7 +807,7 @@ const popular = async function (req, res) {
           join characters on top10.source = 'manga' AND characters.anime LIKE CONCAT('%', top10.title, '%')
       order by favorites desc;
   `,
- 
+
     (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
@@ -832,17 +821,16 @@ const popular = async function (req, res) {
 
 // Route 15: GET /search_title
 const search_title = async function (req, res) {
-  
   const title = req.params.title;
   // like 'Fullmetal Alchemist: Brotherhood'
-  
+
   connection.query(
     `
     select *
         from anime3
         where  anime3.title like '%${title}%';
   `,
- 
+
     (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
@@ -853,7 +841,6 @@ const search_title = async function (req, res) {
     }
   );
 };
-
 
 module.exports = {
   login,

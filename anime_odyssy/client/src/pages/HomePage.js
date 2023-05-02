@@ -1,38 +1,27 @@
 import logo from "../images/logo2.png";
-<<<<<<< HEAD
 import pic from "../images/pic.webp";
 import React, { useContext, useEffect, useState } from "react";
-=======
-import React, { useEffect, useState } from "react";
->>>>>>> yiling
 import { Box, Container, AppBar, Toolbar, Typography } from "@mui/material";
 import { NavLink } from "react-router-dom";
 // import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "../styles/HomePage.css";
-<<<<<<< HEAD
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { AuthContext } from "../components/AuthContex";
-=======
->>>>>>> yiling
+import AnimeCard from "../components/AnimeCard";
 
 const config = require("../config.json");
 
 function HomePage() {
-<<<<<<< HEAD
   const { isLoggedIn, handleLogout } = useContext(AuthContext);
-=======
->>>>>>> yiling
   const [animeForToday, setAnimeForToday] = useState({});
   const [topAnime, setTopAnime] = useState([]);
   const [topManga, setTopManga] = useState([]);
   const [recentAnime, setRecentAnime] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-<<<<<<< HEAD
   const [isFavorited, setIsFavorited] = useState({});
-=======
->>>>>>> yiling
+  const [selectedAnimeId, setSelectedAnimeId] = useState(null);
 
   useEffect((async) => {
     let timeout = setTimeout(() => {
@@ -43,11 +32,7 @@ function HomePage() {
       .then((resJson) => {
         console.log(resJson); // Debugging line
         setAnimeForToday(resJson);
-<<<<<<< HEAD
         console.log(animeForToday.data[0]); // Debugging line
-=======
-        console.log(animeForToday); // Debugging line
->>>>>>> yiling
       })
       .catch((error) => {
         console.error(error);
@@ -76,13 +61,10 @@ function HomePage() {
         setTopManga(resJson);
         console.log(topManga);
       });
-<<<<<<< HEAD
     const username = sessionStorage.getItem("username");
     console.log(username);
     const animeList = JSON.parse(sessionStorage.getItem("favorite_list"));
     console.log(animeList);
-=======
->>>>>>> yiling
     return () => clearTimeout(timeout); // Clear timeout on unmount
   }, []);
 
@@ -99,7 +81,6 @@ function HomePage() {
 
   const specialCardStyle = {
     border: "2px solid #000",
-<<<<<<< HEAD
     width: "1150px",
     height: "350px",
   };
@@ -142,12 +123,6 @@ function HomePage() {
     }
   };
 
-=======
-    width: "1100px",
-    height: "350px",
-  };
-
->>>>>>> yiling
   return isLoading ? (
     <div className="loading">
       <img src={logo} alt="loading" className="rotate" />
@@ -156,7 +131,6 @@ function HomePage() {
     <div>
       <AppBar position="static" style={{ backgroundColor: "blue" }}>
         <Toolbar>
-<<<<<<< HEAD
           <Typography
             style={{
               fontFamily: "Papyrus",
@@ -169,15 +143,12 @@ function HomePage() {
           </Typography>
           <h4>
             <NavLink
-              to={`${animeForToday.data[0].URL}`}
+              onClick={() => setSelectedAnimeId(animeForToday)}
               style={{ color: "white" }}
             >
               {animeForToday.data[0].title}
             </NavLink>
           </h4>
-=======
-          <Typography variant="h6">Recommendation for today</Typography>
->>>>>>> yiling
         </Toolbar>
       </AppBar>
       <Container>
@@ -189,7 +160,6 @@ function HomePage() {
           }}
         >
           {
-<<<<<<< HEAD
             <div
               key={animeForToday.data[0].title}
               style={{ width: `${cardWidth}px` }}
@@ -206,6 +176,16 @@ function HomePage() {
                   )}
                 </div>
               )}
+              {selectedAnimeId && (
+                <AnimeCard
+                  title={selectedAnimeId.title}
+                  duration={selectedAnimeId.total_duration}
+                  favorites={selectedAnimeId.favorites}
+                  score={selectedAnimeId.score}
+                  url={selectedAnimeId.URL}
+                  handleClose={() => setSelectedAnimeId(null)}
+                />
+              )}
               <Box style={specialCardStyle}>
                 <React.Fragment>
                   <img
@@ -214,22 +194,6 @@ function HomePage() {
                     alt={animeForToday.data[0].title}
                     style={{ width: "1150px", height: "350px" }}
                   />
-=======
-            <div key={animeForToday.title} style={{ width: `${cardWidth}px` }}>
-              <Box style={specialCardStyle}>
-                <React.Fragment>
-                  <img
-                    src={animeForToday.URL}
-                    alt={animeForToday.title}
-                    style={{ width: "1100px", height: "350px" }}
-                  />
-
-                  <h4>
-                    <NavLink to={`${animeForToday.URL}`}>
-                      {animeForToday.title}
-                    </NavLink>
-                  </h4>
->>>>>>> yiling
                 </React.Fragment>
               </Box>
             </div>
@@ -238,7 +202,6 @@ function HomePage() {
       </Container>
       <AppBar position="static" style={{ backgroundColor: "blue" }}>
         <Toolbar>
-<<<<<<< HEAD
           <Typography
             style={{
               fontFamily: "Papyrus",
@@ -249,9 +212,6 @@ function HomePage() {
           >
             Recently released
           </Typography>
-=======
-          <Typography variant="h6">Recently released</Typography>
->>>>>>> yiling
         </Toolbar>
       </AppBar>
       <Container>
@@ -262,9 +222,18 @@ function HomePage() {
             gap: "20px",
           }}
         >
+          {selectedAnimeId && (
+            <AnimeCard
+              title={selectedAnimeId.title}
+              duration={selectedAnimeId.total_duration}
+              favorites={selectedAnimeId.favorites}
+              score={selectedAnimeId.score}
+              url={selectedAnimeId.URL}
+              handleClose={() => setSelectedAnimeId(null)}
+            />
+          )}
           {recentAnime.map((anime) => (
             <div key={anime.title} style={{ width: `${cardWidth}px` }}>
-<<<<<<< HEAD
               {isLoggedIn && (
                 <div
                   className="anime-card-favorite"
@@ -273,8 +242,6 @@ function HomePage() {
                   {isFavorited[anime.title] ? <FaHeart /> : <FaRegHeart />}
                 </div>
               )}
-=======
->>>>>>> yiling
               <Box style={cardStyle}>
                 <React.Fragment>
                   <img
@@ -284,7 +251,9 @@ function HomePage() {
                   />
 
                   <h4>
-                    <NavLink to={`${anime.URL}`}>{anime.title}</NavLink>
+                    <NavLink onClick={() => setSelectedAnimeId(anime)}>
+                      {anime.title}
+                    </NavLink>
                   </h4>
                 </React.Fragment>
               </Box>
@@ -294,7 +263,6 @@ function HomePage() {
       </Container>
       <AppBar position="static" style={{ backgroundColor: "blue" }}>
         <Toolbar>
-<<<<<<< HEAD
           <Typography
             style={{
               fontFamily: "Papyrus",
@@ -305,9 +273,6 @@ function HomePage() {
           >
             Top 10 Anime
           </Typography>
-=======
-          <Typography variant="h6">Top 10 Anime</Typography>
->>>>>>> yiling
         </Toolbar>
       </AppBar>
       <Container>
@@ -318,9 +283,18 @@ function HomePage() {
             gap: "20px",
           }}
         >
+          {selectedAnimeId && (
+            <AnimeCard
+              title={selectedAnimeId.title}
+              duration={selectedAnimeId.total_duration}
+              favorites={selectedAnimeId.favorites}
+              score={selectedAnimeId.score}
+              url={selectedAnimeId.URL}
+              handleClose={() => setSelectedAnimeId(null)}
+            />
+          )}
           {topAnime.map((anime) => (
             <div key={anime.title} style={{ width: `${cardWidth}px` }}>
-<<<<<<< HEAD
               {isLoggedIn && (
                 <div
                   className="anime-card-favorite"
@@ -329,8 +303,6 @@ function HomePage() {
                   {isFavorited[anime.title] ? <FaHeart /> : <FaRegHeart />}
                 </div>
               )}
-=======
->>>>>>> yiling
               <Box style={cardStyle}>
                 <React.Fragment>
                   <img
@@ -340,7 +312,9 @@ function HomePage() {
                   />
 
                   <h4>
-                    <NavLink to={`${anime.URL}`}>{anime.title}</NavLink>
+                    <NavLink onClick={() => setSelectedAnimeId(anime)}>
+                      {anime.title}
+                    </NavLink>
                   </h4>
                 </React.Fragment>
               </Box>
@@ -350,7 +324,6 @@ function HomePage() {
       </Container>
       <AppBar position="static" style={{ backgroundColor: "blue" }}>
         <Toolbar>
-<<<<<<< HEAD
           <Typography
             style={{
               fontFamily: "Papyrus",
@@ -361,9 +334,6 @@ function HomePage() {
           >
             Top 10 Manga
           </Typography>
-=======
-          <Typography variant="h6">Top 10 Manga</Typography>
->>>>>>> yiling
         </Toolbar>
       </AppBar>
       <Container>
@@ -374,9 +344,18 @@ function HomePage() {
             gap: "20px",
           }}
         >
+          {selectedAnimeId && (
+            <AnimeCard
+              title={selectedAnimeId.title}
+              duration={selectedAnimeId.total_duration}
+              favorites={selectedAnimeId.favorites}
+              score={selectedAnimeId.score}
+              url={selectedAnimeId.URL}
+              handleClose={() => setSelectedAnimeId(null)}
+            />
+          )}
           {topManga.map((anime) => (
             <div key={anime.title} style={{ width: `${cardWidth}px` }}>
-<<<<<<< HEAD
               {isLoggedIn && (
                 <div
                   className="anime-card-favorite"
@@ -385,8 +364,6 @@ function HomePage() {
                   {isFavorited[anime.title] ? <FaHeart /> : <FaRegHeart />}
                 </div>
               )}
-=======
->>>>>>> yiling
               <Box style={cardStyle}>
                 <React.Fragment>
                   <img
@@ -396,7 +373,9 @@ function HomePage() {
                   />
 
                   <h4>
-                    <NavLink to={`${anime.URL}`}>{anime.title}</NavLink>
+                    <NavLink onClick={() => setSelectedAnimeId(anime)}>
+                      {anime.title}
+                    </NavLink>
                   </h4>
                 </React.Fragment>
               </Box>

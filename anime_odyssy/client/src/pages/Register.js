@@ -34,7 +34,7 @@ function Register() {
           `&password=${password}&gender=${gender}&age=${age}`
       ).then((res) => {
         console.log(res);
-        if (res.status === 200) {
+        if (res.status === 201) {
           alert("successfully create an acount!");
           // setRegistrationSuccessful(true);
           window.location.href = "/login";
