@@ -17,6 +17,7 @@ import { NavLink } from "react-router-dom";
 import AnimeCard from "../components/AnimeCard";
 import { Link } from "react-router-dom";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import logo from "../images/logo2.png";
 
 const config = require("../config.json");
 
@@ -24,13 +25,18 @@ export default function FunPage() {
   const [all_mangas, setMangas] = useState([]);
   const [differentcolors, setHaircolors] = useState([]);
   const [popularcharacters, setCharacters] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
     fetch(
       `http://${config.server_host}:${config.server_port}/funfacts/whitehair`
     )
       .then((res) => res.json())
       .then((resJson) => setMangas(resJson));
+    return () => clearTimeout(timeout); // Clear timeout on unmount
   }, []);
 
   useEffect(() => {
@@ -50,7 +56,11 @@ export default function FunPage() {
   console.log(all_mangas);
   console.log(all_mangas.length);
 
-  return (
+  return isLoading ? (
+    <div className="loading">
+      <img src={logo} alt="loading" className="rotate" />
+    </div>
+  ) : (
     <div>
       <div
         style={{

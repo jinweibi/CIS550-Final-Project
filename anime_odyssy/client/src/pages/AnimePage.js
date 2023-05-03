@@ -1,14 +1,30 @@
-import { useEffect, useState } from 'react';
-import { Button, Box, Container ,AppBar, Toolbar, Typography, Tabs, Tab,Select, FormControl, InputLabel, MenuItem} from '@mui/material';
-import { NavLink } from 'react-router-dom';
-import AnimeCard from '../components/AnimeCard';
-import { Link } from 'react-router-dom';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import { useContext, useEffect, useState } from "react";
+import {
+  Button,
+  Box,
+  Container,
+  AppBar,
+  Toolbar,
+  Typography,
+  Tabs,
+  Tab,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem,
+} from "@mui/material";
+import { NavLink } from "react-router-dom";
+import AnimeCard from "../components/AnimeCard";
+import { Link } from "react-router-dom";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import logo from "../images/logo2.png";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { AuthContext } from "../components/AuthContex";
 
-
-const config = require('../config.json');
+const config = require("../config.json");
 
 export default function AnimePage() {
+  const { isLoggedIn, handleLogout } = useContext(AuthContext);
   const [all_mangas, setMangas] = useState([]);
   const [filteredAnimes, setFilteredAnimes] = useState([]);
   const [value, setValue] = useState(0);
@@ -16,11 +32,17 @@ export default function AnimePage() {
   const [scoreFilter, setScoreFilter] = useState("");
   const [genreScoreFilter, setGenreScoreFilter] = useState([]);
   const [selectedAnimeId, setSelectedAnimeId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFavorited, setIsFavorited] = useState({});
 
   useEffect(() => {
+    let timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
     fetch(`http://${config.server_host}:${config.server_port}/all_animes`)
       .then((res) => res.json())
       .then((resJson) => setMangas(resJson));
+    return () => clearTimeout(timeout); // Clear timeout on unmount
   }, []);
 
   useEffect(() => {
@@ -42,6 +64,44 @@ export default function AnimePage() {
       );
     }
   }, [genreFilter, all_mangas]);
+
+  const handleFavoriteClick = (anime) => {
+    const { source, title, URL } = anime; // extract the source and title properties
+    const username = sessionStorage.getItem("username");
+    setIsFavorited((prevState) => ({
+      ...prevState,
+      [title]: !prevState[title],
+    }));
+
+    if (!isFavorited[title]) {
+      console.log(URL);
+      // Send a request to the backend with the source and title properties
+      fetch(
+        `http://${config.server_host}:${config.server_port}/add_favorite/${username}/${title}/${source}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          alert(data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+      // Send a request to the backend with the source and title properties
+      fetch(
+        `http://${config.server_host}:${config.server_port}/dele_favorite/${username}/${title}/${source}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          alert(data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -81,7 +141,9 @@ export default function AnimePage() {
   const handleScoreChange = (event) => {
     const selectedScore = event.target.value;
     setScoreFilter(selectedScore);
-    const filteredByGenre = all_mangas.filter((manga) => manga.genres.includes(genreFilter));
+    const filteredByGenre = all_mangas.filter((manga) =>
+      manga.genres.includes(genreFilter)
+    );
     switch (selectedScore) {
       case "1":
         setFilteredAnimes(
@@ -100,43 +162,50 @@ export default function AnimePage() {
         break;
       case "4":
         setFilteredAnimes(
-          filteredByGenre.filter((manga) => manga.score >= 3 && manga.score < 4)
+          filteredByGenre
+            .filter((manga) => manga.score >= 3 && manga.score < 4)
             .filter((manga) => manga.genres.includes(genreFilter))
         );
         break;
       case "5":
         setFilteredAnimes(
-          filteredByGenre.filter((manga) => manga.score >= 4 && manga.score < 5)
+          filteredByGenre
+            .filter((manga) => manga.score >= 4 && manga.score < 5)
             .filter((manga) => manga.genres.includes(genreFilter))
         );
         break;
       case "6":
         setFilteredAnimes(
-          filteredByGenre.filter((manga) => manga.score >= 5 && manga.score < 6)
+          filteredByGenre
+            .filter((manga) => manga.score >= 5 && manga.score < 6)
             .filter((manga) => manga.genres.includes(genreFilter))
         );
         break;
       case "7":
         setFilteredAnimes(
-          filteredByGenre.filter((manga) => manga.score >= 6 && manga.score < 7)
+          filteredByGenre
+            .filter((manga) => manga.score >= 6 && manga.score < 7)
             .filter((manga) => manga.genres.includes(genreFilter))
         );
         break;
       case "8":
         setFilteredAnimes(
-          filteredByGenre.filter((manga) => manga.score >= 7 && manga.score < 8)
+          filteredByGenre
+            .filter((manga) => manga.score >= 7 && manga.score < 8)
             .filter((manga) => manga.genres.includes(genreFilter))
         );
         break;
       case "9":
         setFilteredAnimes(
-          filteredByGenre.filter((manga) => manga.score >= 8 && manga.score < 9)
+          filteredByGenre
+            .filter((manga) => manga.score >= 8 && manga.score < 9)
             .filter((manga) => manga.genres.includes(genreFilter))
         );
         break;
       case "10":
         setFilteredAnimes(
-          filteredByGenre.filter((manga) => manga.score >= 9 && manga.score <= 10)
+          filteredByGenre
+            .filter((manga) => manga.score >= 9 && manga.score <= 10)
             .filter((manga) => manga.genres.includes(genreFilter))
         );
         break;
@@ -149,11 +218,14 @@ export default function AnimePage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-     setMenuOpen(!menuOpen);
-   };
-   
+    setMenuOpen(!menuOpen);
+  };
 
-  return (
+  return isLoading ? (
+    <div className="loading">
+      <img src={logo} alt="loading" className="rotate" />
+    </div>
+  ) : (
     <div
       style={{ display: "flex", justifyContent: "flex-start", marginLeft: 0 }}
     >
@@ -165,9 +237,17 @@ export default function AnimePage() {
           marginLeft: "15px",
         }}
       >
-        {selectedAnimeId && <AnimeCard title={selectedAnimeId.title} duration={selectedAnimeId.total_duration} favorites={selectedAnimeId.favorites} score={selectedAnimeId.score} url={selectedAnimeId.URL}handleClose={() => setSelectedAnimeId(null)} />}
+        {selectedAnimeId && (
+          <AnimeCard
+            title={selectedAnimeId.title}
+            duration={selectedAnimeId.total_duration}
+            favorites={selectedAnimeId.favorites}
+            score={selectedAnimeId.score}
+            url={selectedAnimeId.URL}
+            handleClose={() => setSelectedAnimeId(null)}
+          />
+        )}
         {filteredAnimes.map((manga) => (
-         
           <Box
             key={manga.title}
             p={3}
@@ -179,94 +259,112 @@ export default function AnimePage() {
               width: "250px",
             }}
           >
+            {isLoggedIn && (
+              <div
+                className="anime-card-favorite"
+                onClick={() => handleFavoriteClick(manga)}
+              >
+                {isFavorited[manga.title] ? <FaHeart /> : <FaRegHeart />}
+              </div>
+            )}
             <img
               src={manga.URL}
               alt="logo"
               style={{ width: "100%", height: "auto" }}
             />
-            <h4> <Link onClick={() => setSelectedAnimeId(manga)}>
+            <h4>
+              {" "}
+              <Link onClick={() => setSelectedAnimeId(manga)}>
                 {manga.title}
-              </Link></h4>
+              </Link>
+            </h4>
           </Box>
         ))}
       </div>
 
-      <div style={{ float: 'right' }}>
-      <div onClick = {toggleMenu} style={{ marginRight: '16px', minWidth: '200px' }}>
-      <Box
-      sx={{
-        '& > :not(style)': {
-          m: 2,
-        },
-      }}
-    >
-      <FormatListBulletedIcon sx={{ fontSize: 80, color: "secondary" }}>Filter</FormatListBulletedIcon>
-      </Box>
-      </div>
+      <div style={{ float: "right" }}>
+        <div
+          onClick={toggleMenu}
+          style={{ marginRight: "16px", minWidth: "200px" }}
+        >
+          <Box
+            sx={{
+              "& > :not(style)": {
+                m: 2,
+              },
+            }}
+          >
+            <FormatListBulletedIcon sx={{ fontSize: 80, color: "secondary" }}>
+              Filter
+            </FormatListBulletedIcon>
+          </Box>
+        </div>
       </div>
       {menuOpen && (
-
-
-      <div 
-        style={{
-          flex: "1",
-          minWidth: "200px",
-          justifyContent: "center",
-          width: "100%" ,
-        }}
-      >
-        <Tabs
-          orientation="vertical"
-          variant="scrollable"
-          value={value}
-          onChange={handleChange}
+        <div
           style={{
-            borderLeft: "1px solid #ddd",
-            backgroundColor: "#483D8B",
-            marginRight: "80px" ,
-            color: "white",
+            flex: "1",
+            minWidth: "200px",
+            justifyContent: "center",
+            width: "100%",
           }}
         >
-          <Tab label="All" style={{ color: "white" }}/>
-          <Tab label="Action" style={{ color: "white" }}/>
-          <Tab label="Adventure" style={{ color: "white" }}/>
-          <Tab label="Drama" style={{ color: "white" }}/>
-          <Tab label="Fantasy" style={{ color: "white" }}/>
-          <Tab label="Horror" style={{ color: "white" }}/>
-          <Tab label="Supernatural" style={{ color: "white" }}/>
-          <Tab label="Comedy" style={{ color: "white" }}/>
-          <Tab label="Sci-Fi" style={{ color: "white" }}/>
-        </Tabs>
-        <FormControl fullWidth >
-          <InputLabel id="demo-simple-select-label" style={{ color: "white" }}>Score</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={scoreFilter}
-            label="Score"
-            onChange={handleScoreChange}
+          <Tabs
+            orientation="vertical"
+            variant="scrollable"
+            value={value}
+            onChange={handleChange}
             style={{
               borderLeft: "1px solid #ddd",
               backgroundColor: "#483D8B",
               marginRight: "80px",
+              color: "white",
             }}
           >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="1">0-1</MenuItem>
-            <MenuItem value="2">1-2</MenuItem>
-            <MenuItem value="3">2-3</MenuItem>
-            <MenuItem value="4">3-4</MenuItem>
-            <MenuItem value="5">4-5</MenuItem>
-            <MenuItem value="6">5-6</MenuItem>
-            <MenuItem value="7">6-7</MenuItem>
-            <MenuItem value="8">7-8</MenuItem>
-            <MenuItem value="9">8-9</MenuItem>
-            <MenuItem value="10">9-10</MenuItem>
-          </Select>
-        </FormControl>
-      </div >
+            <Tab label="All" style={{ color: "white" }} />
+            <Tab label="Action" style={{ color: "white" }} />
+            <Tab label="Adventure" style={{ color: "white" }} />
+            <Tab label="Drama" style={{ color: "white" }} />
+            <Tab label="Fantasy" style={{ color: "white" }} />
+            <Tab label="Horror" style={{ color: "white" }} />
+            <Tab label="Supernatural" style={{ color: "white" }} />
+            <Tab label="Comedy" style={{ color: "white" }} />
+            <Tab label="Sci-Fi" style={{ color: "white" }} />
+          </Tabs>
+          <FormControl fullWidth>
+            <InputLabel
+              id="demo-simple-select-label"
+              style={{ color: "white" }}
+            >
+              Score
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={scoreFilter}
+              label="Score"
+              onChange={handleScoreChange}
+              style={{
+                borderLeft: "1px solid #ddd",
+                backgroundColor: "#483D8B",
+                marginRight: "80px",
+              }}
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="1">0-1</MenuItem>
+              <MenuItem value="2">1-2</MenuItem>
+              <MenuItem value="3">2-3</MenuItem>
+              <MenuItem value="4">3-4</MenuItem>
+              <MenuItem value="5">4-5</MenuItem>
+              <MenuItem value="6">5-6</MenuItem>
+              <MenuItem value="7">6-7</MenuItem>
+              <MenuItem value="8">7-8</MenuItem>
+              <MenuItem value="9">8-9</MenuItem>
+              <MenuItem value="10">9-10</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
       )}
     </div>
   );
-  
 }

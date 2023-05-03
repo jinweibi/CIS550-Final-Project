@@ -3,7 +3,6 @@ import pic from "../images/pic.webp";
 import React, { useContext, useEffect, useState } from "react";
 import { Box, Container, AppBar, Toolbar, Typography } from "@mui/material";
 import { NavLink } from "react-router-dom";
-// import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "../styles/HomePage.css";

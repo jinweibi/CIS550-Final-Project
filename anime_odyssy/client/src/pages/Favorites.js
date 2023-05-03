@@ -1,4 +1,5 @@
-import logo from "../images/logo2.png";
+import logo2 from "../images/logo2.png";
+import logo from "../images/logo.png";
 import pic from "../images/pic.webp";
 import React, { useContext, useEffect, useState } from "react";
 import { Box, Container, AppBar, Toolbar, Typography } from "@mui/material";
@@ -54,7 +55,7 @@ function Favorites() {
       });
 
     return () => clearTimeout(timeout);
-  }, []);
+  }, [isFavorited]);
 
   const cardWidth = 250;
 
@@ -112,7 +113,7 @@ function Favorites() {
 
   return isLoading ? (
     <div className="loading">
-      <img src={logo} alt="loading" className="rotate" />
+      <img src={logo2} alt="loading" className="rotate" />
     </div>
   ) : (
     <div>
@@ -138,7 +139,7 @@ function Favorites() {
                 <Box style={cardStyle}>
                   <React.Fragment>
                     <img
-                      src={anime.URL}
+                      src={logo}
                       alt={anime.title}
                       style={{ width: "200px", height: "200px" }}
                     />
